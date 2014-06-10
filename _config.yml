@@ -1,0 +1,10 @@
+# Site settings
+title: Americas Test Kitchen Developer Blog
+email: TODO@example.com
+description: "TODO: Write this."
+baseurl: ""
+url: "http://yourdomain.com"
+
+# Build settings
+markdown: kramdown
+permalink: pretty
