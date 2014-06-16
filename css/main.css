@@ -259,6 +259,16 @@ a:visited {
   letter-spacing: -1px;
 }
 
+.post-content img {
+  width: 100%;
+  border-radius: 3px;
+}
+
+.post-content hr {
+  border: 0;
+  border-bottom: 1px dashed #333;
+}
+
 .post-content blockquote {
   border-left: 4px solid #e8e8e8;
   font-size: 18px;
@@ -287,6 +297,7 @@ a:visited {
   border-radius: 3px;
   border: 1px solid #d5d5e9;
   font-size: 15px;
+  overflow: scroll;
   padding: 8px 12px;
 }
 
