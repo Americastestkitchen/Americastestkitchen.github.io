@@ -2,11 +2,16 @@
 layout: post
 title:  "Bathroom Status"
 author: Nathan Lilienthal
+github: nixpulvis
 date:   2014-06-15 23:15:00
 categories: rails embedded
 ---
 
 Going to the bathroom is something we all do on a daily basis. At ATK we have shared single person unisex bathrooms, which makes finding an open bathroom difficult at times. It's by no means the largest problem that needs solving, but it was a problem that involved a hardware solution, thus capturing my personal interest.
+
+![Office View](/images/bathroom_status_view.png)
+
+This is the view from my work area, as you can see it's very easy to tell when it's safe to run to the bathroom now, thanks to our bathroom status monitor.
 
 To tackle this problem I opted for the following technologies.
 
@@ -27,6 +32,10 @@ This project's code is pretty simple, broken into two very discrete parts. The b
 ### The Spark Core
 
 The Spark Core is a very cool little device. It's very small yet has an on-board WiFi module. This makes it perfect for inter-office status reporting. The WiFi in our building reaches pretty much 100% of the space, so it's a simple way to send data to and from a server. This allows for the status hardware to communicate directly with the webserver. Solutions involving other forms of radio communication need a dedicated hardware for receiving messages and forwarding them to the webserver.
+
+![The device](/images/bathroom_status_hardware.jpg)
+
+The photo above is the current setup. As you can see it's dead simple, just a Spark Core with a magnetic door sensor and an LED. We don't even need resistors for the sensor because we are making use of the internal pull up capabilities of the core.
 
 Sending events with the Spark Core is simple, in fact the whole firmware for this project fits easily below. To understand it better refer to the *excellent* [Spark Core documentation](http://docs.spark.io).
 
@@ -122,10 +131,6 @@ And just like that we have live updating data in Ember from a Spark Core.
 ![The UI](/images/bathroom_status_client.png)
 
 Simple, flat, and to the point. Backed by ember, it updates in realtime, and updates font sizes to take up as much space as it can. Keeping everything very large allows it to be useful when put up on screens for the whole office.
-
-![Office View](/images/bathroom_status_view.png)
-
-This is the view from my work area, as you can see it's very easy to tell when it's safe to run to the bathroom.
 
 ---
 
