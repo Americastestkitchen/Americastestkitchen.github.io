@@ -4,8 +4,28 @@ layout: default
 <div class="post">
 
   <header class="post-header">
-    <h1>{{ page.title }}</h1>
-    <p class="meta">{{ page.date | date: "%b %-d, %Y" }}{% if page.author %} • {{ page.author }}{% endif %}{% if page.meta %} • {{ page.meta }}{% endif %}</p>
+    <h1>{{ page.title }}
+      {% if page.github %}
+      <span class="github">
+        <a href="https://www.github.com/{{ page.github }}">{{ page.github }}</a>
+      </span>
+      {% endif %}
+    </h1>
+    <p class="meta">
+      {{ page.date | date: "%b %-d, %Y" }}
+
+      {% if page.author %}
+      {% if page.github_username %}
+      • <a href="https://www.github.com/{{ page.github_username }}">{{ page.author }}</a>
+      {% else %}
+      • {{ page.author }}
+      {% endif %}
+      {% endif %}
+
+      {% if page.meta %}
+      • {{ page.meta }}
+      {% endif %}
+    </p>
   </header>
 
   <article class="post-content">

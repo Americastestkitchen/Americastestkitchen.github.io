@@ -208,6 +208,11 @@ a:visited {
   line-height: 1;
 }
 
+.post-header h1 .github {
+  font-size: 16px;
+  letter-spacing: 0px;
+}
+
 .post-header .meta {
   color: #818181;
   font-size: 15px;
