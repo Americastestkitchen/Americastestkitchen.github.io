@@ -1,8 +1,9 @@
 ---
 layout: post
 title:  "Bathroom Status"
+github: Americastestkitchen/metricution
 author: Nathan Lilienthal
-github: nixpulvis
+github_username: nixpulvis
 date:   2014-06-15 23:15:00
 categories: rails embedded
 ---
