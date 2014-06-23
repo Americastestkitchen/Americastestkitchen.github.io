@@ -24,7 +24,7 @@ To tackle this problem I opted for the following technologies.
 
 ## The Concept
 
-Whenever someone uses a bathroom in our office they close the door (obviously), but more importantly, when they are finished they leave the door open. In the past the door being open has been a sort of signal for availability. This application leverages this preexisting protocol to implement a simple bathroom status monitor. The data is collected from the Spark Core equipped with a magnetic door sensor. The door sensor can tell when the door is closed or open, that's it. When the door is closed we say the bathroom is occupied, and when the door is opened we say the bathroom is available.
+Whenever someone uses a bathroom in our office they close the door (obviously), but more importantly, when they are finished they leave the door open. In the past the door being open has been a sort of signal for availability. This application leverages this preexisting protocol to implement a simple bathroom status monitor. The data is collected from the [Spark Core](https://www.spark.io) equipped with a magnetic door sensor [Reed switch](http://en.wikipedia.org/wiki/Reed_switch). The door sensor can tell when the door is closed or open, that's it. When the door is closed we say the bathroom is occupied, and when the door is opened we say the bathroom is available.
 
 ## The Nitty Gritty
 
@@ -36,7 +36,7 @@ The Spark Core is a very cool little device. It's very small yet has an on-board
 
 ![The device](/images/bathroom_status_hardware.jpg)
 
-The photo above is the current setup. As you can see it's dead simple, just a Spark Core with a magnetic door sensor and an LED. We don't even need resistors for the sensor because we are making use of the internal pull up capabilities of the core.
+The photo above is the current setup. As you can see it's dead simple, just a [Spark Core](https://www.spark.io) with a [Adafruit Magnetic Contact Switch (door sensor)](http://www.adafruit.com/product/375) and an LED. We don't even need resistors for the sensor because we are making use of the internal pull up capabilities of the core.
 
 Sending events with the Spark Core is simple, in fact the whole firmware for this project fits easily below. To understand it better refer to the *excellent* [Spark Core documentation](http://docs.spark.io).
 
