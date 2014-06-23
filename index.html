@@ -10,6 +10,13 @@ layout: default
         <a class="post-link" href="{{ post.url | prepend: site.baseurl }}">{{ post.title }}</a>
         <span class="post-date">
           {{ post.date | date: "%b %-d, %Y" }}
+          {% if post.author %}
+          {% if post.github_username %}
+          • <a href="https://www.github.com/{{ post.github_username }}">{{ post.author }}</a>
+          {% else %}
+          • {{ post.author }}
+          {% endif %}
+          {% endif %}
         </span>
       </li>
     {% endfor %}
