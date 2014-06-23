@@ -90,4 +90,4 @@ serialize :foo, JSONArraySerializer.new(column_type: :array)  # Saves to array c
 
 ---
 
-This gem, while simple, has allowed us to DRY up various parts of our code. Areas that before had their own custom serializers which were all doing almost the same things. Making one implantation for all our use cases allowed me to write tests which cover everything in one central place. This improves overall test coverage and therefor improves confidence. When dealing with things like saving arrays of credit card tokens, or access array, confidence is the most important commodity you can have.
+This gem, while simple, has allowed us to DRY up various parts of our code. Areas that before had their own custom serializers which were all doing almost the same things. Making one implantation for all our use cases allowed me to write tests which cover everything in one central place. This improves overall test coverage and therefor improves confidence. When dealing with things like saving credit card token arrays, or access arrays, confidence is the most important commodity you can have.
