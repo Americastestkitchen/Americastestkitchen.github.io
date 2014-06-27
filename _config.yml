@@ -8,3 +8,9 @@ url: "http://yourdomain.com"
 # Build settings
 markdown: kramdown
 permalink: pretty
+
+# analytics
+analytics:
+  provider: google
+  google: 
+    tracking_id: 'UA-52337213-1'
