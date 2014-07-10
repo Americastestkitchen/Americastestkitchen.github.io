@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "Bathroom Status"
+title:  "Door Monitoring"
 github: Americastestkitchen/metricution
 author: Nathan Lilienthal
 github_username: nixpulvis
