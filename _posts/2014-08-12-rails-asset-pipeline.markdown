@@ -15,11 +15,15 @@ its main mission was to ease the developer pain on getting assets (images,
 scripts, stylesheets) production ready. 
 
 There are a lot of minor gotchas with the pipeline like:
+
 - Remembering to actually use the helper methods to get things properly fingerprinted
 - Remembering to add custom named manifest files to config/application.rb
-```ruby config/application.rb
+
+```ruby
+#config/application.rb
 config.assets.precompile += ['new_manifest.js', 'new_manifest.css']
 ```
+
 - Remembering to include newly created javascripts and stylesheets to our manifests.
 - And I am sure there is much more that I am forgetting.
 
