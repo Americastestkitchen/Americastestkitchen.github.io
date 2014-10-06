@@ -26,6 +26,4 @@ legitimate discipline worthy of serious study, and in doing so would probably
 find their disdain for it subsiding.
 
 You can view my full presentation on why we should care about CSS best
-practices here:
-
-http://slides.com/laurefischer/css-spirit-quest
+practices [here](http://slides.com/laurefischer/css-spirit-quest).
