@@ -1,7 +1,6 @@
 ---
 layout: post
-title:  "Ruby on Rails as an API - for an Ember-CLI Frontend"
-github: Americastestkitchen/presentations
+title:  "Ruby on Rails  + Ember-CLI"
 author: Janice K. N. Smith 
 github_username: jks8787
 date:   2014-09-01 23:15:00
@@ -16,7 +15,7 @@ This post is really an overview of the technical bones of the project - uitlizin
 ## Setting up a Ruby on Rails Backend
 this will be out API (application programming interface). - Try to stay away from using too many generators - you will not be needed any views or need to respond to html. All those duites will be carried by the front end application. 
 
-{% highlight shell %}
+{% highlight bash %}
 rails new backend -T -d postgresql
 {% endhighlight %}
 
@@ -45,13 +44,13 @@ Now you get to setup a new shiney ember-cli app!
 
 if you have brew doctor all setup then:
 
-{% highlight shell %}
+{% highlight bash %}
 brew install node
 {% endhighlight %}
 
 once this is done you will have node.js and you should have npm both installed.
 
-{% highlight shell %}
+{% highlight bash %}
 npm insall -g bower
 nmp insatll -g ember-cli
 ember new frontend
@@ -61,7 +60,7 @@ this is where I tell you that - you should use the latest versions of all of the
 
 You will need to set up your routes, each one represents a state in your app.
 In our  router.js file - we had:
-{% highlight hbs %}
+{% highlight html %}
 import Ember from 'ember';
 import config from './config/environment';
 
@@ -86,7 +85,7 @@ Then you will set up your contollers in your new app - controllers  - controller
 
 for our App  this was pretty boiler plate.
 
-{% highlight hbs %}
+{% highlight html %}
 import Ember from 'ember';
 export default Ember.ArrayController.extend({
   exists: function() {
@@ -109,7 +108,7 @@ We didn't need to do anything special to for our App - later of course we might 
 Now you need templates! “Handlebars templates as an HTML-like ... for describing the user interface”[ember.js docs](http://emberjs.com/guides/templates/)
 
 our longin.hbs template:
-{% highlight hbs %}
+{% highlight html %}
 <form {{action 'authenticate' on='submit'}} role="form">
   <div class="form-group">
     <label for="identification">Login</label>
@@ -129,7 +128,7 @@ We used the packages ember-cli-simple-auth to for the frontend App combined with
 [ember-cli-simple-auth](https://github.com/simplabs/ember-cli-simple-auth)
 [ember-cli-simple-auth-devise](https://github.com/simplabs/ember-cli-simple-auth-devise)
 
-{% highlight shell %}
+{% highlight bash %}
 npm install --save-dev ember-cli-simple-auth
 npm install --save-dev ember-cli-simple-auth-devise
 {% endhighlight %}
@@ -138,18 +137,14 @@ npm install --save-dev ember-cli-simple-auth-devise
 
 Now you need to wrap it all togther - in our App reseachR - we wanted to be sure it would simple for the user - what better way to do that than a chrome extension. Lucky for us this is pretty simple. 
 
-1- create a manifest file named manifest.json
-2- add resources (must exist inside the extension package)
-3- load unpacked extension
-4- reload 
+- create a manifest file named manifest.json
+- add resources (must exist inside the extension package)
+- load unpacked extension
+- reload 
 
 (see the [docs](https://developer.chrome.com/extensions/getstarted))
 
 Lastly - if you want to see the code take a look on github [researchR](https://github.com/researchr).
 
-   /)_/)
-  ( .  .)
- C(") (")
-
-find the slides here [yay-slides](http://www.slideshare.net/jks8787/rubyonrailsandembercli)
+Find the slides here [yay-slides](http://www.slideshare.net/jks8787/rubyonrailsandembercli)
 
