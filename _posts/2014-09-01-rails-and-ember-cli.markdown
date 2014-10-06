@@ -151,3 +151,5 @@ Lastly - if you want to see the code take a look on github [researchR](https://g
   ( .  .)
  C(") (")
 
+find the slides here [yay-slides](http://www.slideshare.net/jks8787/rubyonrailsandembercli)
+
