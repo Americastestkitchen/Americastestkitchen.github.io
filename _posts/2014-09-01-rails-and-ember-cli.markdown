@@ -8,28 +8,29 @@ categories: rails ember-cli chrome_extension
 ---
 
 ## About the Application
-this app was consived and put together for a reacent hack-a-thon - the Travel & Education Hackathon with LearnLaunch in Boston 
+this app was conceived and put together for a recent hack-a-thon - the Travel & Education Hackathon with LearnLaunch in Boston 
 ( which was a 24 hour hackathon!). I was part of a team of 3 developers and one business person. 
-The team was me Janice Smith, Alvin Crespo, and Ilan Rimon as devs and - Eli Meyer as the business end. I really enjoyed working with all of three 
-of them and I very happy with the quality of the event over all. The point of the application was to have a low friction way to organize reaseach 
-on a topics for yourself or to share with others. 
+The team was me (Janice Smith), Alvin Crespo, and Ilan Rimon as devs and Eli Meyer as the business end. I really enjoyed working with all of three 
+of them and I was very happy with the quality of the event over all. The point of the application was to have a low friction way to organize research 
+on topics for yourself or to share with others. 
 
-This post is really an overview of the technical bones of the project - uitlizing it the app ( we called it reseachR ) and an example application.
+This post is really an overview of the technical bones of the project - utilizing the app ( we called it reseachR ) as an example application.
 
 ## Setting up a Ruby on Rails Backend
-this will be out API (application programming interface). - Try to stay away from using too many generators - you will not be needed any views 
-or need to respond to html. All those duites will be carried by the front end application. 
+This will be out API (application programming interface). - Try to stay away from using too many generators - you will not need any views 
+or need to respond to html. All those duties will be executed by the frontend application. 
 
 {% highlight bash %}
 rails new backend -T -d postgresql
 {% endhighlight %}
 
-The -T to not use TestUnit and the -d postgresql because you to use a PostgreSQL database.
+The -T to not use TestUnit ( and I would 100%  have used RSPEC - if we had written tests).
+The -d postgresql because you to use a PostgreSQL database.
 
 You need to set up models and controllers - for this App we needed models for Entries, Projects and Users. 
 Be sure to setup controllers to serve up json.
 
-You will want some serializers - to make sure your json is as will be execpted by the fontend App.
+You will want some serializers - to make sure your json is as will be accepted by the fontend App.
 
 {% highlight ruby %}
 class EntrySerializer < ActiveModel::Serializer
@@ -37,21 +38,21 @@ class EntrySerializer < ActiveModel::Serializer
 end
 {% endhighlight %}
 
-You will need some authenication for users - we used the Devise gem - set-up Devise as you would normally (their docs are pretty straightforward). 
+You will need some authentication for users - we used the Devise gem - set up Devise as you would normally (their docs are pretty straightforward). 
 Dont worry about exporting the views - you can create some seed data and check that auth is working now if you like.
 
 {% highlight ruby %}
   code
 {% endhighlight %}
 
-Set up a connection - for your backend and frontend to speak to eachother. for this we used 
+Set up a connection - for your backend and frontend to speak to each other. for this we used 
 the gem rack-cors [rack-cors github](https://github.com/cyu/rack-cors) "Rack::Cors provides support for Cross-Origin Resource Sharing 
 (CORS) for Rack compatible web applications".
 
 ## Setting up the Ember-CLI Frontend
-Now you get to setup a new shiney ember-cli app!
+Now you get to set up a new shiny ember-cli app!
 
-if you have brew doctor all setup then:
+if you have brew doctor all set up then:
 
 {% highlight bash %}
 brew install node
@@ -60,8 +61,8 @@ brew install node
 once this is done you will have node.js and you should have npm both installed.
 
 {% highlight bash %}
-npm insall -g bower
-nmp insatll -g ember-cli
+npm install -g bower
+nmp install -g ember-cli
 ember new frontend
 {% endhighlight %}
 
@@ -92,7 +93,7 @@ Router.map(function() {
 export default Router;
 {% endhighlight %}
 
-Then you will set up your contollers in your new app - controllers  - controllers let you decorate models with display logic.
+Then you will set up your controllers in your new app - controllers  - controllers let you decorate models with display logic.
 
 for our App  this was pretty boiler plate.
 
@@ -108,22 +109,23 @@ export default Ember.ArrayController.extend({
 });
 {% endhighlight %}
 
-Now you should be thinking about what you really want out of your app. You can set up some views are key because they are:  
-“The role of the view in an Ember.js application is to translate browser events into events that have meaning” 
+Now you should be thinking about what you really want out of your app. 
+
+You can set up some views: “The role of the view in an Ember.js application is to translate browser events into events that have meaning” 
 [ember.js docs](http://emberjs.com/guides/views/)
 
-We didn't use any views - because 24 hours - but these can be really powerful.
+We didn't use any views - because of the scope of the project (24 hours!) - but these can be really powerful.
 
 About models - "In Ember, every route has an associated model. This model is set by implementing a route's model hook, 
 by passing the model as an argument to {{link-to}}, or by calling a route's transitionTo() method."
  [ember.js docs](http://emberjs.com/guides/models/)
 
-We didn't need to do anything special to for our App - later of course we might need to make more changes. 
+We didn't need to do anything special for our App - later of course we might need to make more changes. 
 
 Now you need templates! “Handlebars templates as an HTML-like ... for describing the user interface”
 [ember.js docs](http://emberjs.com/guides/templates/)
 
-our longin.hbs template:
+our login.hbs template:
 {% highlight html %}
 <form {{action 'authenticate' on='submit'}} role="form">
   <div class="form-group">
@@ -138,8 +140,8 @@ our longin.hbs template:
 </form>
 {% endhighlight %}
 
-Now you need to move on to authenication! 
-We used the packages ember-cli-simple-auth to for the frontend App combined with  -auth-devise to hook up to devise in rails-land.
+Now you need to move on to authentication! 
+We used the package ember-cli-simple-auth  for the frontend App combined with  the package -auth-devise to hook up to devise in rails-land.
 
 [ember-cli-simple-auth](https://github.com/simplabs/ember-cli-simple-auth)
 [ember-cli-simple-auth-devise](https://github.com/simplabs/ember-cli-simple-auth-devise)
@@ -149,10 +151,10 @@ npm install --save-dev ember-cli-simple-auth
 npm install --save-dev ember-cli-simple-auth-devise
 {% endhighlight %}
 
-## Setting up Chrome Extention 
+## Setting up Chrome Extension 
 
 Now you need to wrap it all togther - in our App reseachR - we wanted to be sure it would simple for the user - 
-what better way to do that than a chrome extension. Lucky for us this is pretty simple. 
+what better way to do that than a chrome extension? Lucky for us this is pretty simple. 
 
 - create a manifest file named manifest.json
 - add resources (must exist inside the extension package)
