@@ -8,19 +8,19 @@ date:   2015-02-06 23:15:00
 categories: ruby rollout
 ---
 
-[Rollout](https://github.com/FetLife/rollout) is a popular ruby gem that helps manage the sometimes tedious nature
-of feature flagging. It was orginially architected with Redis as a dependency.
-While we do love Redis, immensely, we felt now was not quite the time to add yet
+[Rollout](https://github.com/FetLife/rollout) is a popular Ruby gem that helps manage the sometimes tedious nature
+of feature flagging. It was originally architected with Redis as a dependency.
+While we do love Redis immensely, we felt now was not quite the time to add yet
 another piece of infrastructure to our application. Thankfully, a semi-recent
-update for Rollout removed the Redis dependency and allows the end-user to use
+update for Rollout removed the Redis dependency and allows the end user to use
 any key-value store. The only requirements are that an instance of the store
-needs to respond to the set, get, and del method.  
+needs to respond to the `get`, `set`, and `del` methods.  
 
 ## The Decision
 
 Given that we are not ready to add another piece of infrastructure to our stack,
-we decided to create a wrapper for [Postgres' Hstore](http://www.postgresql.org/docs/9.0/static/hstore.html).
-We created a new ActiveRecord model called FeatureFlag that has a singluar
+we decided to create a wrapper for [PostgreSQL's Hstore](http://www.postgresql.org/docs/9.0/static/hstore.html) feature.
+We created a new ActiveRecord model called FeatureFlag that has a singular
 attribute (migration and model below).
 
 {% highlight ruby %}
@@ -38,19 +38,18 @@ class FeatureFlag < ActiveRecord::Base
 end
 {% endhighlight %}
 
-So far, so good. We didnt necessarily need an empty AR model and could have
+So far, so good. We didn't necessarily need an empty AR model and could have
 simply written some SQL statements inside of some PG connections, but most of 
-our business logice resides in AR.
+our business logic resides in AR.
 
 ## Implementing the Store
 
 Now for the fun part! As stated above, an instance of our store needs to be able
-to handle the get, set, and del methods appropriately. Just from perusing the 
+to handle the `get`, `set`, and `del` methods appropriately. Just from perusing the 
 rollout codebase, the methods are defined as the following:
-- get method takes a key argument and returns the value for the key
-- set method takes two arguments (key, value) and creates or updates the key 
-value pair
-- del method takes a key argument and deletes the key value pair.
+- `get` takes a key argument and returns the value for the key
+- `set` takes two arguments (key, value) and creates or updates the key-value pair
+- `del` takes a key argument and deletes the key-value pair
 
 Below is the code that handles these scenarios.  
 
