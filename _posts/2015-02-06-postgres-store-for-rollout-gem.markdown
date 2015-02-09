@@ -165,8 +165,9 @@ end
 {% endhighlight %}
 
 ## Conclusion
-We wanted to create something with as small a footprint as possible without 
-having to add Redis to our stack for feature flagging. This little piece of 
-software seems to fit exactly that.
 
-Of note, we have gemified the code and it is now available on rubygems.
+We wanted to create something with as small a footprint as possible without
+having to add Redis to our stack for feature flagging. This little piece of
+software seems to fit exactly that. The code is available on
+[Github](https://github.com/Americastestkitchen/rollout_postgres_store) and
+[RubyGems](https://rubygems.org/gems/rollout_postgres_store).
