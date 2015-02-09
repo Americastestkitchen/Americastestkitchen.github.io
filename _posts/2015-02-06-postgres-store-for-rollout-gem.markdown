@@ -171,3 +171,7 @@ having to add Redis to our stack for feature flagging. This little piece of
 software seems to fit exactly that. The code is available on
 [Github](https://github.com/Americastestkitchen/rollout_postgres_store) and
 [RubyGems](https://rubygems.org/gems/rollout_postgres_store).
+
+## Discuss
+[Discus on HN with us!](https://news.ycombinator.com/item?id=9021266)
+
