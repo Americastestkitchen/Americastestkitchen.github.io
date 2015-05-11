@@ -27,7 +27,7 @@ step of the process.
   
 ---
   
-## Shifting to a Blameless Cuture
+## Shifting to a Blameless Culture
 When considering postmortems for your company, one has to be mindful of
 maintaing a culture of being completely [blameless](https://codeascraft.com/2012/05/22/blameless-postmortems/).
 This _has to exist_ for postmortems to have any value to an organization.
@@ -35,9 +35,8 @@ The main point of postmortems is to disseminate information and educate team
 members on specific issues that bring down systems. We want to break up those
 important system wide knowledge silos in as positive a fashion as we can.
   
-A real-world example:  
-Greg had been working rather late one evening to ship a feature. He had
-accidentally left out the all important `:` in our `clock.rb` file causing all
+Let's say Greg had been working rather late one evening to ship a feature. He had
+accidentally left out the all important `:` in our `clock.rb` file, causing all
 of our scheduled jobs to fail. This failure actually went undetected for an
 extra day or two as our error provider never picked up any errors (our clock
 process would not boot up).
@@ -55,24 +54,22 @@ tests for this scenario (when applicable).
 ## Tools We Use
 We really enjoy using [discourse](https://github.com/discourse/discourse) for
 documenting everything that relates to our development processes, including
-our postmortems. It is honestly the perfect forum to allow for a team of 
+our postmortems. Not only does it enable a team of 
 developers to document all the things using the tools we know and love
-(i.e. Markdown).
+(i.e. Markdown), but the threaded forum format _encourages continued discussion_ 
+of the issues involved. The search quality is pretty good, too.
   
 ## Overcoming Hurdles
-There is a lot of overhead in writing postmortems, especially at 4am. An
-engineer has to be very mindful that they will be writing a postmortem after
-the downtime that includes a repeatable trace of commands,
-analysis of logs, etc. Writing a postmortem well after the events have
+4am isn't the easiest time to write eloquent prose. As engineers, we need to be in 
+the habit of taking notes and snapshots as we go (repeatable trace of commands,
+analysis of logs, etc), being mindful of the need to compile a postmortem afterwards.
+Writing a postmortem well after the events have
 transpired with little documentation can lead to incorrect diagnosis and
 misremembering the various analyses performed to determine the root cause of the
-issue. 
-
-It's paramount that the postmortem be written no later than 48 hours after the
+issue.  It's paramount that the postmortem be written no later than 48 hours after the
 downtime. Analysis and command history get lost quickly, especially in the heat
 of the moment.
 
-## Conclusion
 Any organization that is technical in nature should implement some form of 
 documentation about downtime and critical issues. The thoughtful curation and 
 creation of these long lived documents will help any organization in the long
