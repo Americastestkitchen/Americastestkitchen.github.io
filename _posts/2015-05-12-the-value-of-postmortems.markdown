@@ -8,20 +8,20 @@ categories: culture engineering
 ---
 
 Things go wrong, especially in software. One of the more frustrating elements of
-software engineering is troubleshooting off hour issues that seemingly happen
+software engineering is troubleshooting off-hour issues that seemingly happen
 randomly (i.e. no software changes on the system in question). Sometimes it's
-how you have integrated into a 3rd party vendor. Other times the interent as a 
-whole is down due to some widespread DDOS attack. No matter the reason, I
-truly believe that every company should have a policy of creating Postmortems
+how you have integrated into a third-party vendor. Other times the internet as a 
+whole is down due to some widespread DDoS attack. No matter the reason, I
+truly believe that every company should have a policy of creating postmortems
 for internal and possibly external use.
 
 ## Difficulties
-The largest obstable to overcome is shifting the point of view of downtime from
+The largest obstacle to overcome is shifting the point of view of downtime from
 blame to being completely [blameless](https://codeascraft.com/2012/05/22/blameless-postmortems/). This shift _has to happen_ for postmortems to have any value to
 an organization. The main point of postmortems is to disseminate information and
-educate team members for specific issues that bring down systems.
+educate team members on specific issues that bring down systems.
 
-If blame is involved, it deincentivizes the entire structure of a postmortem and
+If blame is involved, it disincentivizes the entire structure of a postmortem and
 silos system knowledge into the few that tackle those issues.
 
 ## Benefits
@@ -37,7 +37,7 @@ following:
 - Long-term fix  
 - Related JIRA issue links  
 
-The main benefit from a postmortem policy is information dissemination. Every
+The main benefit of a postmortem policy is information dissemination. Every
 engineer can be made aware of a set of symptoms for specific issues and make a
 determination as to the best course of action. In addition, postmortems can also
 serve as a historic basis to determine severity of issues and frequency of
@@ -46,10 +46,10 @@ issues.
 ## Cons
 There is a lot of overhead in writing postmortems, especially at 4am. An
 engineer has to be very mindful that they will be writing a postmortem after
-the downtime such that they create a repeatable trace of commands,
+the downtime that includes a repeatable trace of commands,
 analysis of logs, etc. Writing a postmortem well after the events have
 transpired with little documentation can lead to incorrect diagnosis and
-misremembering the various analysis to determine the root cause of the issue.
+misremembering the various analyses to determine the root cause of the issue.
 
 It's paramount that the postmortem be written no later than 48 hours after the
 downtime. Analysis and command history get lost quickly, especially in the heat
