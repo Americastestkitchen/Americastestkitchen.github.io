@@ -74,3 +74,7 @@ Any organization that is technical in nature should implement some form of
 documentation about downtime and critical issues. The thoughtful curation and 
 creation of these long lived documents will help any organization in the long
 term through knowledge dissemination.
+
+___
+
+[Discuss on HN]()
