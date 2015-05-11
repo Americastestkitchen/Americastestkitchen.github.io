@@ -7,49 +7,66 @@ date:   2015-05-12 23:15:00
 categories: culture engineering
 ---
 
-Things go wrong, especially in software. One of the more frustrating elements of
-software engineering is troubleshooting off-hour issues that seemingly happen
-randomly (i.e. no software changes on the system in question). Sometimes it's
-how you have integrated into a third-party vendor. Other times the internet as a 
-whole is down due to some widespread DDoS attack. No matter the reason, I
-truly believe that every company should have a policy of creating postmortems
-for internal and possibly external use.
+It's 2am and your phone wakes you. Servers down. Sleepily, you muster the energy
+to get out of bed and start troubleshooting system issues and resolve them after
+two hours. You are able to go back to sleep for that extra beauty rest
+before going into work. Of course the moment you are in the office, everyone
+wants to know of your heroic deeds, from the steps needed to resolve the issue
+to the actual issue at hand. You painstakingly recount the root issue and the
+attempt to discuss the exact steps taken to solve it. Everyone is intently
+listening to your story when all of a sudden, you forget the order of operations
+needed to resolve the issue.
 
-## Difficulties
-The largest obstacle to overcome is shifting the point of view of downtime from
-blame to being completely [blameless](https://codeascraft.com/2012/05/22/blameless-postmortems/). This shift _has to happen_ for postmortems to have any value to
-an organization. The main point of postmortems is to disseminate information and
-educate team members on specific issues that bring down systems.
+Whether or not you forget the replication steps to solve the issue, this 
+rather familiar scenario is where a postmortem can help your team. A postmortem
+would immediately disseminate the necessary information (asynchronously)
+reducing the need for this somewhat awkward group discussion. In addition,
+the engineer should be receiving [the highest of fives](http://media.giphy.com/media/Cp9cUJc4hgNvG/giphy.gif)
+for getting the business back online _AND_ appropriately documenting every
+step of the process.
+  
+---
+  
+## Shifting to a Blameless Cuture
+When considering postmortems for your company, one has to be mindful of
+maintaing a culture of being completely [blameless](https://codeascraft.com/2012/05/22/blameless-postmortems/).
+This _has to exist_ for postmortems to have any value to an organization.
+The main point of postmortems is to disseminate information and educate team 
+members on specific issues that bring down systems. We want to break up those
+important system wide knowledge silos in as positive a fashion as we can.
+  
+A real-world example:  
+Greg had been working rather late one evening to ship a feature. He had
+accidentally left out the all important `:` in our `clock.rb` file causing all
+of our scheduled jobs to fail. This failure actually went undetected for an
+extra day or two as our error provider never picked up any errors (our clock
+process would not boot up).
+  
+More often than not, Greg will more than likely already feel terrible for being
+the root contributor to the issue at hand. Adding a layer of blame to that is
+just not needed or warranted and may have negative effects on his professional
+development.
+  
+For the sake of our postmortem, it also does not matter one bit that Greg was at 
+fault for this issue. What matters is that the symptoms of the issue are 
+correctly documented, the solution is well documented, and there are regression
+tests for this scenario (when applicable).
 
-If blame is involved, it disincentivizes the entire structure of a postmortem and
-silos system knowledge into the few that tackle those issues.
-
-## Benefits
-At the very least, every engineer should write a detailed "report" about the
-downtime that took place.  Screenshots are encouraged (we use a mix of NewRelic
-and Librato for pretty graphs). At America's Test Kitchen, we document the
-following:  
-- Summary (what happened, symptoms)  
-- How did the issue come to our attention?  
-- Impact  
-- Root cause  
-- Short-term fix  
-- Long-term fix  
-- Related JIRA issue links  
-
-The main benefit of a postmortem policy is information dissemination. Every
-engineer can be made aware of a set of symptoms for specific issues and make a
-determination as to the best course of action. In addition, postmortems can also
-serve as a historic basis to determine severity of issues and frequency of
-issues.
-
-## Cons
+## Tools We Use
+We really enjoy using [discourse](https://github.com/discourse/discourse) for
+documenting everything that relates to our development processes, including
+our postmortems. It is honestly the perfect forum to allow for a team of 
+developers to document all the things using the tools we know and love
+(i.e. Markdown).
+  
+## Overcoming Hurdles
 There is a lot of overhead in writing postmortems, especially at 4am. An
 engineer has to be very mindful that they will be writing a postmortem after
 the downtime that includes a repeatable trace of commands,
 analysis of logs, etc. Writing a postmortem well after the events have
 transpired with little documentation can lead to incorrect diagnosis and
-misremembering the various analyses to determine the root cause of the issue.
+misremembering the various analyses performed to determine the root cause of the
+issue. 
 
 It's paramount that the postmortem be written no later than 48 hours after the
 downtime. Analysis and command history get lost quickly, especially in the heat
@@ -57,6 +74,6 @@ of the moment.
 
 ## Conclusion
 Any organization that is technical in nature should implement some form of 
-documentation about downtime. While the creation of these documents is pure
-overhead, it will end up paying for itself in spades as the  symptoms and
-solutions get disseminated to the engineering team as a whole.
+documentation about downtime and critical issues. The thoughtful curation and 
+creation of these long lived documents will help any organization in the long
+term through knowledge dissemination.
