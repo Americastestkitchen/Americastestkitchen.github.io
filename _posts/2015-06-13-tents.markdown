@@ -1,0 +1,93 @@
+---
+layout: post
+title:  "One Big Advantage to Remote Employment"
+author: Jonathan Lukens
+github_username: redneckbeard
+date:   2015-06-13 23:15:00
+---
+
+I've worked almost my entire adult life from home: first as a translator, then
+as a programmer. In fact, in the twelve years since finishing college, I've
+only worked in a office for eighteen months, eleven of which were in Russia, so
+I'm not sure that even counts. 
+
+My remote work history falls into three buckets:
+
+* *Self-employment.* You'd better like solitude for this (I do), because it
+involves basically _no human contact at all_ during working hours. I'm not
+sure I'd recommend this to others.
+* *All-remote teams.* This is my favorite arrangement. You get the same level
+of quiet most of the time and still have your Get Out Of Shower Free card to
+play, but you have other humans (or maybe chatbots that pass the Turing Test --
+I haven't always managed to verify) to bounce ideas off, assist with debugging,
+etc.
+* *Mixed remote/on-site teams.* This is perhaps the most common arrangment I've
+encountered, and it's what we have at ATK, but it brings with it a particular
+set of challenges.
+
+In the past year and a half, we've grown from a team of four to a team of
+eleven, and though others occasionally work from home when needed, only two of
+us live far enough outside of the Boston area that we consistently work
+remotely. The shift in our remote:on-site ratio has produced a few wrinkles,
+but I am generally still a very happy remote worker because of all the
+advantages and flexibility that remote work confers.
+
+I'm feeling particularly good about one aspect of this today:
+
+
+![The Office.](/images/office.jpg)
+
+
+## I AM ACTUALLY WRITING THIS IN A TENT
+
+That is correct. The photo above is my "Thursday/Friday office." I have to
+admit that I actually structured this post so that the picture would be below
+the fold for dramatic effect. I thought about titling this "Tent-Driven
+Development," but that could have given it away. But seriously, working in the
+woods is amazing, and I really suggest you try it.
+
+### How to work in a tent
+
+There are four principle components to an office campsite:
+
+1. *Land*. In my case, we are converting a piece of property into a farm, so I
+get this for free. But campgrounds are everywhere, and are often very
+inexpensive.
+2. *Sustenance*. Bring water -- lots of water -- and a cooler full of snacks.
+3. *Power*. If you are at the right campground, this is no big deal. In my
+case, I have a GoalZero 150Wh battery with a small solar charger. On sunny
+days, I can get 2 full charges into my 15" MBP, 1.5 if it's cloudy. This
+doesn't leave a lot of room for running iTunes all day, or for forgetting to
+bring your laptop fully charged.
+4. *Internet*. I ended up getting a Verizon hotspot, which works extremely
+well. It is, in fact, substantially faster than my Charter broadband at home.
+At $50/month for 5GB of transfer, it's not exactly cheap, but it turns out that
+is not such a bad thing.
+
+### Improved office productivity through outdoorsmanship
+
+I have found that my coding hours in a tent produce a lot more working,
+well-reasoned code than those during the rest of the week under fluorescent
+lights. Why?
+
+The first reason for this is bandwidth restriction. If I exceed my 4GB
+limit, I get hit another $15 for every gigabyte of overage. This incentivizes
+me not to click on the cat pictures or even conference presentations that
+bounce around in our Slack rooms. StackOverflow pages take up very few bytes on
+the wire compared to YouTube streams.
+
+A more important aspect, however, is being visibly and audibly surrounded by a
+variety of living things. If you have never found your job at least a little
+dehumanizing -- you know, staring into a glowing rectangle and smashing buttons
+to send signals to a robot -- I'm fairly suspicious that you've already been
+assimilated by the Borg. Sometimes I see a deer, or a fox, when I'm up getting
+a drink; sometimes I can look up and see our resident redtail hawk circling
+over the clearing. We know that [spending time with trees reduces
+stress](http://well.blogs.nytimes.com/2013/03/27/easing-brain-fatigue-with-a-walk-in-the-park/?_r=0),
+and we know that programming can be stressful. It is great to be able to get
+that relief immediately by looking around you, rather than waiting for the end
+of the work day to go to the park.
+
+### Taking it up a notch: the Kickstarter campaign
+
+Just kidding. That would be ridiculous.
