@@ -42,10 +42,8 @@ With that, I give you our style guide (a working draft, I'll call it).
     - A good exception to this rule would be for the use of pseudo selectors in the vein of `nth-child` and `nth-of-type`.
 
 ### Variables
-- Make use of our `z-index` scale file. 
-    - The scale file has 10 layers of private variables.
-    - Every time a z-index is used, create a new variable that identifies its value and the feature being used (i.e. `@zIndex-4-profileAvater`).
-    - This file helps preserve sanity when it comes to z-indexes, and allows us to look in a single file to understand different layers of the application.
+- Make use of our `z-index` scale file. Here's what it looks like:
+{% gist be26dedc217a3e08f8c1 %}
 - Use our own line-height, font-weight, and letter-spacing scale files.
 - Color variables and font variables should be declared in separate files and referenced whenever possible.
 
@@ -73,7 +71,7 @@ The hard part, maybe not surprisingly, has been actually implementing the rules 
 
 ### Be vigilant
 
-I've learned the hard way the importance of getting CSS code into as good a state as possible before calling a feature "done". We've all said to ourselves "I'm just going to get this to look right, and then I'll come back and refactor later." Except that you won't. Because refactoring CSS is terrible. Class names tend to be quite "sticky" and resistent to refactoring given the way they get reused, and after giving in to a sub-optimal solution in order to fix a bug quickly, changing things can feel precarious. This is why it's worth spending a little extra time up front to make sure you are following your own rules (harder to do than I thought). The same goes for reviewing code from other team members - it's worth being a little nit picky on the initial pull request for the sake of everyone's future sanity.
+I've learned the hard way the importance of getting CSS code into as good a state as possible before calling a feature "done". We've all said to ourselves "I'm just going to get this to look right, and then I'll come back and refactor later." _Except that you won't. Because **refactoring CSS is terrible**._ Class names tend to be quite "sticky" and resistent to refactoring given the way they get reused, and after giving in to a sub-optimal solution in order to fix a bug quickly, changing things can feel precarious. This is why it's worth spending a little extra time up front to make sure you are following your own rules (harder to do than I thought). The same goes for reviewing code from other team members - it's worth being a little nit picky on the initial pull request for the sake of everyone's future sanity.
 
 ### Make peace with your legacy styles
 
