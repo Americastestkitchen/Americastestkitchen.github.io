@@ -42,7 +42,7 @@ With that, I give you our style guide (a working draft, I'll call it).
     - A good exception to this rule would be the use of pseudo selectors in the vein of `nth-child` and `nth-of-type`.
 
 ### Variables
-- Make use of our `z-index` scale file. Here's what it looks like:
+- Make use of our `z-index` scale file (which borrows heavily from [Medium's `z-index` scale](https://medium.com/@fat/mediums-css-is-actually-pretty-fucking-good-b8e2a6c78b06). Here's what it looks like:
 {% gist be26dedc217a3e08f8c1 %}
 - Use our own line-height, font-weight, and letter-spacing scale files.
 - Color variables and font variables should be declared in separate files and referenced whenever possible.
