@@ -30,7 +30,29 @@ content, need sophisticated previewing tools for this unstructured offering.
 And that is what we are building, a semi-realtime previewing engine that gives
 content creators _instantaneous_ feedback for their free flowing content.  
   
-
+## Slight Tangent About Why Article Content Is A Big Deal
+_This is purely from a technical standpoint._  
+To date, the majority of our content is denormalized and very rigid in
+structure. We have given our WebEdit team a CMS that mostly involves inputting 
+text and creating necessary associations between our content (there are very 
+minimal text fields that allow for custom HTML). This general workflow gives us
+consistency on our frontend for our users but really doesn't allow WebEdit to
+create custom content from a layout perspective. Look at the two pdfs 
+below as examples of `Article` content:
+  
+[Chewy, Fudgy Brownies](/pdfs/Article_Brownies.pdf)  
+[Baked Alaska](/pdfs/Article_BakedAlaska.pdf)  
+  
+It goes without saying that these pages are much, *much* more engaging than our
+current crop of documents. That is not meant to be a knock on  our current
+documents. It's just a different means of conveying to our users
+what went right and what went _wrong_ in the kitchen as we develop recipes. We
+do not have a content vehicle to effectively communicate what
+went wrong in the kitchen because failures differ wildly from recipe to recipe.
+What fails for a brownie may be absolutely different than what can fail for
+flank steak. Conveying this _failure_ message effectively is the goal of our 
+upcoming Article content.
+  
 ## Minimum Viable Product
 Our prototype is going to be a proof of concept. Technologies used:
 `JSXTransformer`, `iframe`, `jQuery`, `React`. In our current CMS (created with
@@ -148,7 +170,7 @@ What's this look like now?
   
 <iframe width="560" height="315" src="https://www.youtube.com/embed/3mkwPOC_uYo" frameborder="0" allowfullscreen></iframe>  
   
-As for the documentation, we found an
+As for the WebEdit's need for documented components, we found an
 [open sourced project](https://github.com/jmfurlott/react-styleguide) that has
 been amazing for conveying both markup and the actual look of the component.  
   
