@@ -21,8 +21,8 @@ productivity while creating unstructured content._
 content offerings. Instead of having highly structured data, we are designing
 this to be free flowing (think *one wysiwyg to rule them all*).
   
-*Stack*: Our stack for this piece of content is a Ruby on Rails backend with a
-shiny new React frontend utilizing both [flux](https://facebook.github.io/flux/)
+*Stack*: Our stack for this piece of content is a Ruby on Rails back-end with a
+shiny new React front-end utilizing both [flux](https://facebook.github.io/flux/)
 and [react-router](https://github.com/rackt/react-router).  
   
 *Problem*: Our WebEdit team, the people that create all of our wonderful web 
@@ -35,12 +35,12 @@ _This is purely from a technical standpoint._
 To date, the majority of our content is denormalized and very rigid in
 structure. We have given our WebEdit team a CMS that mostly involves inputting 
 text and creating necessary associations between our content (there are very 
-minimal text fields that allow for custom HTML). This general workflow gives us
-consistency on our frontend for our users but really doesn't allow WebEdit to
+minimal text fields that allow for custom HTML). This general work flow gives us
+consistency on our front-end for our users but really doesn't allow WebEdit to
 create custom content from a layout perspective. Look at the two pdfs 
 below as examples of `Article` content:
   
-[Chewy, Fudgy Brownies](/pdfs/Article_Brownies.pdf)  
+[Chewy Brownies](/pdfs/Article_Brownies.pdf)  
 [Baked Alaska](/pdfs/Article_BakedAlaska.pdf)  
   
 It goes without saying that these pages are much, *much* more engaging than our
@@ -88,7 +88,7 @@ Speaking of WebEdit, it's time to meet with them to get their thoughts on this.
 _(Just going to put my scribbled down notes from WebEdit below...)_  
 - This is really cool, but does it have to be inside the same window? Can we 
 put it in it's own window?  
-- Can we get some sort of error message if we write bad markup (jsx)?  
+- Can we get some sort of error message if we write bad markup (JSX)?  
 - Can we get documentation for the various components we have access too?  
   
 _(Some notes I took down when dogfooding it to the engineering team...)_  
@@ -97,7 +97,7 @@ _(Some notes I took down when dogfooding it to the engineering team...)_
 `React.Children.map` for this content.  
 - `JSXTransformer` is being deprecated. Use Babel and pass over the transpiledJS  
   
-Woah. All great, great ideas. Definitely going to incorporate this feedback into
+Whoa. All great, great ideas. Definitely going to incorporate this feedback into
 my MVP.
   
 ## Version 2 - The previewWindow and postMessage...and linting?
@@ -119,7 +119,7 @@ Underscore's debounce method. When the callback is invoked, it performs the
 following functions:  
 1) Lints the JSX.  
 2a) On failure, disable all submit buttons and display an error message.  
-2b On success, enable all submit buttons and transform the jsx using 
+2b On success, enable all submit buttons and transform the JSX using 
 babel (and wrap it in an `Article` react component for...reasons).  
 3) After transformation, it checks for our previewWindow and posts the message
 to the previewWindow.  
@@ -139,31 +139,31 @@ what it outputs.
 _(Going back to my scribbled down notes from engineering...)_  
 - Where is my white list!!?!?  
 - Where is the friggin white list??  
-- Moar whitelist please!  
+- Moar white list please!  
   
 Alright...thanks guys. I can feel the feature already maturing as I received no
 feedback on the actual implementation of it and mostly received feedback on 
-evolving it and protecting WebEdit where I can (whitelisting). We are definitely
+evolving it and protecting WebEdit where I can (white listing). We are definitely
 on the right track, so let's start moving onto version 3!  
   
 ## Version 3 - Final Final Release (Maybe?)
 So instead of listening to a single input (on 'keyup'), we need to bind our 
 postMessage event to more inputs.  
   
-Here is the code for said event passing json and listening to _specific_ inputs.
+Here is the code for said event passing JSON and listening to _specific_ inputs.
 {% gist d35e6fcda00b68301c74 %}  
   
-Whitelisting didn't prove very difficult either. We created a mixin that would
+White listing didn't prove very difficult either. We created a mixin that would
 traverse the component's children and return null if it was 
 not in the list (hence why we wrapped the resultant JSX in `<Article>` tags).
-Currently, it only supports whitelisting of HTML elements that React supports.
-We will be modifying the conditional logic to also check for a whitelist of 
+Currently, it only supports white listing of HTML elements that React supports.
+We will be modifying the conditional logic to also check for a white list of 
 custom components in the very near future.  
   
 ### Whitelist:  
 {% gist e501bdd75b8971f84975 %}  
   
-### Article Component Whitelisting:  
+### Article Component White Listing:  
 {% gist b8e91ccdb26d7e6b7337 %}  
   
 What's this look like now?  
