@@ -26,10 +26,11 @@ Also according to https://golang.org/:
 ## Why learn Go?
 
 * the syntax is easy to pick up - it feels simple and is easy to learn.
-* really nice documentation help with the above point - https://golang.org/doc/faq is a nice palce to start.
-* It has garbage collection - this is great for someone like me who is used to this being handled for me -  In many compiled languages one has to manage on your own, but Go does it for me!
+* really nice documentation help with the above point - https://golang.org/doc/faq is a nice place to start.
+* It has garbage collection - this is great for someone like me who is used to this being handled for me -  In many compiled languages one has to manage on your own, such as in native C++ which by default has no such thing - you an always write your own or use a third party solution, but Go does it for me!
 * go compiles very quickly - speed is king.
-* I learned promagining with dynamic typing. I had expected Go, being statically typed, to be more work painful to learn - especially after wrestling with tutorials for other languages . This was a great experience with static typing.
+* I learned programming with dynamic typing. I had expected Go, being statically typed, to be more work painful to learn - especially after wrestling with tutorials for other languages . This was a great experience with static typing.
+* Ruby's support for concurrency is something you need to set up with the help of a framework - like ["Celluloid"](http://celluloid.io/). In Go - Go channels provide a concurrency primitive comparable to the actors model, and channels come baked in already.
 
 There are other great things about Go - but I am focusing on my short list.
 
