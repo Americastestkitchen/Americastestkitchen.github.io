@@ -1,0 +1,24 @@
+---
+layout: post
+title:  "Getting It Done In A Flash"
+author: Chris Candelora
+github_username: ccandelora
+date:   2015-11-18 23:15:00
+categories: flash
+---
+
+Recently while working on a new project I stumbled across a neat little trick. The gist of the project was to create a landing page for our marketing group that they could use to direct customers to from a number of paid adverting programs. The landing page just included a form where we would collect some customer information and once it was submitted we would bring them to our homepage. Simple enough.
+
+Then came the tricky part. Because we were using paid advertising programs to direct customers to the landing page we needed a layer of metrics to determine if the campaigns were performing and how many customer we were converting. All of the advertising programs had their own set of tracking pixels and methods. Normally this would be easy because you could just include what ever code the tracking pixel required on a confirmation page. But this project didn't have a confirmation page. The next page after submitting the form took the customer straight to our homepage. It didn't make sense to include the tracking pixel code on our homepage. It seemed very inefficient to load these pixels every time the homepage loaded. Plus if a customer did come through the landing page, got to the homepage and starting using the site and natural hit the homepage several times the tracking pixels would fire and cause the conversion metrics to be inflated and inaccurate.
+
+So I thought maybe I can do something using JavaScript to trigger the pixels at the appropriate time, but I wasn't really thrilled to have to go down that path. Then I thought maybe I could use a cookie and trigger the pixels when the cookie was present, but I didn't really love that idea either. I kept thinking to myself there must be an easy solution. If only Ruby on Rails had some way to trigger these pixels on the first load of the homepage when the referrer was the landing page.
+
+I kept thinking about flash messages. I thought the mechanics of a flash message did exactly what I wanted but displaying a flash message wasn't going to solve my problem. I decided to spend a little more time developing this idea. So I hit the [guide](http://guides.rubyonrails.org/action_controller_overview.html#the-flash). The guide included the following bit: "The flash is a special part of the session which is cleared with each request. This means that values stored there will only be available in the next request, which is useful for passing error messages etc." I thought perfect this is it! The "etc" part struck me. Could this be the key? The next line in the guide stated: "It is accessed in much the same way as the session, as a hash (it's a [FlashHash](http://api.rubyonrails.org/classes/ActionDispatch/Flash/FlashHash.html) instance)." Then it clicked. This will work. I can use this just like I would a cookie but I wouldn't have worry about the cookie persisting. This was a one and done solution. I could set the flash and use it to render a partial that included the code for the tracking pixels on the homepage.
+
+Here's an example of the controller.
+{% gist eb3c7006d1b733d3b140 %}
+
+Here's an example of the view.
+{% gist f5b2a280fadcffbf4810 %}
+
+This little trick has opened my eyes to the power of the flash. I'm definitely going to be looking for more ways to use it on future projects.
