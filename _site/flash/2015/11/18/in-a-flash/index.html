@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Getting It Done In A Flash</title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="description" content="TODO: Write this.">
+    <link rel="canonical" href="http://yourdomain.com/flash/2015/11/18/in-a-flash/">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/main.css">
+
+</head>
+
+
+    <body>
+
+    <header class="site-header">
+
+  <div class="wrap">
+
+    <a class="site-title" href="/">ATK Developer Blog</a>
+
+    <nav class="site-nav">
+      <a href="#" class="menu-icon">
+        <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+           viewBox="0 0 18 15" enable-background="new 0 0 18 15" xml:space="preserve">
+          <path fill="#505050" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0
+            h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
+          <path fill="#505050" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484
+            h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
+          <path fill="#505050" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0
+            c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
+        </svg>
+      </a>
+      <div class="trigger">
+        <!-- All pages with a title. -->
+        
+        
+          <a class="page-link" href="/about/">About</a>
+        
+        
+        
+          <a class="page-link" href="/feed.xml">RSS</a>
+        
+        
+        
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrap">
+      <div class="post">
+
+  <header class="post-header">
+    <h1>Getting It Done In A Flash
+      
+    </h1>
+    <p class="meta">
+      Nov 18, 2015
+
+      
+      
+      • <a href="https://www.github.com/ccandelora">Chris Candelora</a>
+      
+      
+
+      
+    </p>
+  </header>
+
+  <article class="post-content">
+  <p>Recently while working on a new project I stumbled across a neat little trick. The gist of the project was to create a landing page for our marketing group that they could use to direct customers to from a number of paid adverting programs. The landing page just included a form where we would collect some customer information and once it was submitted we would bring them to our homepage. Simple enough.</p>
+
+<p>Then came the tricky part. Because we were using paid advertising programs to direct customers to the landing page we needed a layer of metrics to determine if the campaigns were performing and how many customer we were converting. All of the advertising programs had their own set of tracking pixels and methods. Normally this would be easy because you could just include what ever code the tracking pixel required on a confirmation page. But this project didn’t have a confirmation page. The next page after submitting the form took the customer straight to our homepage. It didn’t make sense to include the tracking pixel code on our homepage. It seemed very inefficient to load these pixels every time the homepage loaded. Plus if a customer did come through the landing page, got to the homepage and starting using the site and natural hit the homepage several times the tracking pixels would fire and cause the conversion metrics to be inflated and inaccurate.</p>
+
+<p>So I thought maybe I can do something using JavaScript to trigger the pixels at the appropriate time, but I wasn’t really thrilled to have to go down that path. Then I thought maybe I could use a cookie and trigger the pixels when the cookie was present, but I didn’t really love that idea either. I kept thinking to myself there must be an easy solution. If only Ruby on Rails had some way to trigger these pixels on the first load of the homepage when the referrer was the landing page.</p>
+
+<p>I kept thinking about flash messages. I thought the mechanics of a flash message did exactly what I wanted but displaying a flash message wasn’t going to solve my problem. I decided to spend a little more time developing this idea. So I hit the <a href="http://guides.rubyonrails.org/action_controller_overview.html#the-flash">guide</a>. The guide included the following bit: “The flash is a special part of the session which is cleared with each request. This means that values stored there will only be available in the next request, which is useful for passing error messages etc.” I thought perfect this is it! The “etc” part struck me. Could this be the key? The next line in the guide stated: “It is accessed in much the same way as the session, as a hash (it’s a <a href="http://api.rubyonrails.org/classes/ActionDispatch/Flash/FlashHash.html">FlashHash</a> instance).” Then it clicked. This will work. I can use this just like I would a cookie but I wouldn’t have worry about the cookie persisting. This was a one and done solution. I could set the flash and use it to render a partial that included the code for the tracking pixels on the homepage.</p>
+
+<p>Here’s an example of the controller.</p>
+<noscript><pre>400: Invalid request
+</pre></noscript>
+<script src="https://gist.github.com/eb3c7006d1b733d3b140.js"> </script>
+
+<p>Here’s an example of the view.</p>
+<noscript><pre>400: Invalid request
+</pre></noscript>
+<script src="https://gist.github.com/f5b2a280fadcffbf4810.js"> </script>
+
+<p>This little trick has opened my eyes to the power of the flash. I’m definitely going to be looking for more ways to use it on future projects.</p>
+
+  </article>
+
+</div>
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrap">
+
+    <div class="footer-col-1 column">
+      <ul>
+        <li>ATK Developer Blog</li>
+        <li>
+          <a href="https://github.com/Americastestkitchen">
+            <span class="icon github">
+              <svg version="1.1" class="github-icon-svg" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+                 viewBox="0 0 16 16" enable-background="new 0 0 16 16" xml:space="preserve">
+                <path fill-rule="evenodd" clip-rule="evenodd" fill="#C2C2C2" d="M7.999,0.431c-4.285,0-7.76,3.474-7.76,7.761
+                c0,3.428,2.223,6.337,5.307,7.363c0.388,0.071,0.53-0.168,0.53-0.374c0-0.184-0.007-0.672-0.01-1.32
+                c-2.159,0.469-2.614-1.04-2.614-1.04c-0.353-0.896-0.862-1.135-0.862-1.135c-0.705-0.481,0.053-0.472,0.053-0.472
+                c0.779,0.055,1.189,0.8,1.189,0.8c0.692,1.186,1.816,0.843,2.258,0.645c0.071-0.502,0.271-0.843,0.493-1.037
+                C4.86,11.425,3.049,10.76,3.049,7.786c0-0.847,0.302-1.54,0.799-2.082C3.768,5.507,3.501,4.718,3.924,3.65
+                c0,0,0.652-0.209,2.134,0.796C6.677,4.273,7.34,4.187,8,4.184c0.659,0.003,1.323,0.089,1.943,0.261
+                c1.482-1.004,2.132-0.796,2.132-0.796c0.423,1.068,0.157,1.857,0.077,2.054c0.497,0.542,0.798,1.235,0.798,2.082
+                c0,2.981-1.814,3.637-3.543,3.829c0.279,0.24,0.527,0.713,0.527,1.437c0,1.037-0.01,1.874-0.01,2.129
+                c0,0.208,0.14,0.449,0.534,0.373c3.081-1.028,5.302-3.935,5.302-7.362C15.76,3.906,12.285,0.431,7.999,0.431z"/>
+              </svg>
+            </span>
+            <span class="username">Americastestkitchen</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+
+    <div class="footer-col-2 column">
+      <ul>
+        <li>Our Sites</li>
+        <li><a href="http://www.americastestkitchen.com">America's Test Kitchen</a></li>
+        <li><a href="http://www.cooksillustrated.com">Cooks Illustrated</a></li>
+        <li><a href="http://www.cookscountry.com">Cooks Country</a></li>
+        <li><a href="http://www.onlinecookingschool.com">Online Cooking School</a></li>
+      </ul>
+    </div>
+
+    <div class="footer-col-3 column">
+      <ul>
+        <li>Open Source Projects</li>
+        <li><a href="https://github.com/Americastestkitchen/preflight">preflight</a></li>
+        <li><a href="https://github.com/Americastestkitchen/json_array_serializer">json_array_serializer</a></li>
+        <li><a href="https://github.com/Americastestkitchen/hostel">hostel</a></li>
+      </ul>
+    </div>
+
+  </div>
+
+</footer>
+
+
+    </body>
+</html>

@@ -1,0 +1,846 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>ATK Developer Blog</title>
+    <description>TODO: Write this.</description>
+    <link>http://yourdomain.com/</link>
+    <atom:link href="http://yourdomain.com/feed.xml" rel="self" type="application/rss+xml" />
+    
+      <item>
+        <title>Getting It Done In A Flash</title>
+        <description>&lt;p&gt;Recently while working on a new project I stumbled across a neat little trick. The gist of the project was to create a landing page for our marketing group that they could use to direct customers to from a number of paid adverting programs. The landing page just included a form where we would collect some customer information and once it was submitted we would bring them to our homepage. Simple enough.&lt;/p&gt;
+
+&lt;p&gt;Then came the tricky part. Because we were using paid advertising programs to direct customers to the landing page we needed a layer of metrics to determine if the campaigns were performing and how many customer we were converting. All of the advertising programs had their own set of tracking pixels and methods. Normally this would be easy because you could just include what ever code the tracking pixel required on a confirmation page. But this project didn’t have a confirmation page. The next page after submitting the form took the customer straight to our homepage. It didn’t make sense to include the tracking pixel code on our homepage. It seemed very inefficient to load these pixels every time the homepage loaded. Plus if a customer did come through the landing page, got to the homepage and starting using the site and natural hit the homepage several times the tracking pixels would fire and cause the conversion metrics to be inflated and inaccurate.&lt;/p&gt;
+
+&lt;p&gt;So I thought maybe I can do something using JavaScript to trigger the pixels at the appropriate time, but I wasn’t really thrilled to have to go down that path. Then I thought maybe I could use a cookie and trigger the pixels when the cookie was present, but I didn’t really love that idea either. I kept thinking to myself there must be an easy solution. If only Ruby on Rails had some way to trigger these pixels on the first load of the homepage when the referrer was the landing page.&lt;/p&gt;
+
+&lt;p&gt;I kept thinking about flash messages. I thought the mechanics of a flash message did exactly what I wanted but displaying a flash message wasn’t going to solve my problem. I decided to spend a little more time developing this idea. So I hit the &lt;a href=&quot;http://guides.rubyonrails.org/action_controller_overview.html#the-flash&quot;&gt;guide&lt;/a&gt;. The guide included the following bit: “The flash is a special part of the session which is cleared with each request. This means that values stored there will only be available in the next request, which is useful for passing error messages etc.” I thought perfect this is it! The “etc” part struck me. Could this be the key? The next line in the guide stated: “It is accessed in much the same way as the session, as a hash (it’s a &lt;a href=&quot;http://api.rubyonrails.org/classes/ActionDispatch/Flash/FlashHash.html&quot;&gt;FlashHash&lt;/a&gt; instance).” Then it clicked. This will work. I can use this just like I would a cookie but I wouldn’t have worry about the cookie persisting. This was a one and done solution. I could set the flash and use it to render a partial that included the code for the tracking pixels on the homepage.&lt;/p&gt;
+
+&lt;p&gt;Here’s an example of the controller.&lt;/p&gt;
+&lt;noscript&gt;&lt;pre&gt;400: Invalid request
+&lt;/pre&gt;&lt;/noscript&gt;
+&lt;script src=&quot;https://gist.github.com/eb3c7006d1b733d3b140.js&quot;&gt; &lt;/script&gt;
+
+&lt;p&gt;Here’s an example of the view.&lt;/p&gt;
+&lt;noscript&gt;&lt;pre&gt;400: Invalid request
+&lt;/pre&gt;&lt;/noscript&gt;
+&lt;script src=&quot;https://gist.github.com/f5b2a280fadcffbf4810.js&quot;&gt; &lt;/script&gt;
+
+&lt;p&gt;This little trick has opened my eyes to the power of the flash. I’m definitely going to be looking for more ways to use it on future projects.&lt;/p&gt;
+</description>
+        <pubDate>Wed, 18 Nov 2015 18:15:00 -0500</pubDate>
+        <link>http://yourdomain.com/flash/2015/11/18/in-a-flash/</link>
+        <guid isPermaLink="true">http://yourdomain.com/flash/2015/11/18/in-a-flash/</guid>
+      </item>
+    
+      <item>
+        <title>Go for a Beginner</title>
+        <description>&lt;p&gt;First - definition of a beginner for the purpose of this post – I started my time as a professional programmer almost 2 years ago. I was self taught mainly in python - followed by a term in a really great code bootcamp. I mainly develop in ruby on rails - with some backbone and react.&lt;/p&gt;
+
+&lt;h2 id=&quot;what-is-go&quot;&gt;What is Go?&lt;/h2&gt;
+&lt;p&gt;The official answer is that Go, also called golang, is a programming language developed at Google in 2007 and is a statically typed language with garbage collection, type safety, some dynamic typing capabilities.&lt;/p&gt;
+
+&lt;p&gt;Also according to https://golang.org/:&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;… it’s worth trying again with a new language, a concurrent, garbage-collected language with fast compilation…&lt;/p&gt;
+  &lt;ul&gt;
+&lt;li&gt;It is possible to compile a large Go program in a few seconds on a single computer.&lt;/li&gt;
+&lt;li&gt;Go provides a model for software construction that makes dependency analysis easy and avoids much of the overhead of C-style include files and libraries.&lt;/li&gt;
+&lt;li&gt;Go&#39;s type system has no hierarchy, so no time is spent defining the relationships between types. Also, although Go has static types the language attempts to make types feel lighter weight than in typical OO languages.&lt;/li&gt;
+&lt;li&gt;Go is fully garbage-collected and provides fundamental support for concurrent execution and communication.&lt;/li&gt;
+&lt;li&gt;By its design, Go proposes an approach for the construction of system software on multicore machines.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/blockquote&gt;
+
+&lt;h2 id=&quot;why-learn-go&quot;&gt;Why learn Go?&lt;/h2&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;the syntax is easy to pick up - it feels simple and is easy to learn.&lt;/li&gt;
+  &lt;li&gt;really nice documentation help with the above point - https://golang.org/doc/faq is a nice place to start.&lt;/li&gt;
+  &lt;li&gt;It has garbage collection - this is great for someone like me who is used to this being handled for me -  In many compiled languages one has to manage on your own, such as in native C++ which by default has no such thing - you an always write your own or use a third party solution, but Go does it for me!&lt;/li&gt;
+  &lt;li&gt;go compiles very quickly - speed is king.&lt;/li&gt;
+  &lt;li&gt;I learned programming with dynamic typing. I had expected Go, being statically typed, to be more work painful to learn - especially after wrestling with tutorials for other languages . This was a great experience with static typing.&lt;/li&gt;
+  &lt;li&gt;Ruby’s support for concurrency is something you need to set up with the help of a framework - like &lt;a href=&quot;http://celluloid.io/&quot;&gt;“Celluloid”&lt;/a&gt;. In Go - Go channels provide a concurrency primitive comparable to the actors model, and channels come baked in already.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;There are other great things about Go - but I am focusing on my short list.&lt;/p&gt;
+
+&lt;h2 id=&quot;how-to-start&quot;&gt;How to start?&lt;/h2&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;a tour of go - this is a really great place to start. ( https://tour.golang.org )&lt;/li&gt;
+  &lt;li&gt;a great place to look for tools - ( https://github.com/avelino/awesome-go )&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;For web development  - after trying a few different configurations of libraries - I found gin to be best for me. ( https://github.com/gin-gonic/gin ), it is well docuamented and cuts down on a lot of boiler plate code. That said a great thing about the Go ecosystem is there are several different options.&lt;/p&gt;
+</description>
+        <pubDate>Tue, 29 Sep 2015 19:15:00 -0400</pubDate>
+        <link>http://yourdomain.com/go/2015/09/29/post-about-go/</link>
+        <guid isPermaLink="true">http://yourdomain.com/go/2015/09/29/post-about-go/</guid>
+      </item>
+    
+      <item>
+        <title>You Gotta Check Out This Enumerator, It&#39;ll Change Your Life I Swear!</title>
+        <description>&lt;p&gt;Well, not really but it has made my job easier and I think it could do the same for you.&lt;/p&gt;
+
+&lt;p&gt;I’m relatively new to Ruby and in my past life my bread and butter language was PHP. When I was told that our stacks were going to be ripped down and replaced with Ruby on Rails I had mixed emotions. In one hand I was really excited to be working with Ruby on Rails. A new cool language to sink my teeth into. On the other hand I was going to be working with Ruby on Rails! I thought, OK maybe this wont be so bad. I can use what I know about PHP and apply it to Ruby on Rails.  So I hit the books and tutorials and anything I could get my hands on. I quickly learned that Ruby on Rails and Ruby had a lot of built in magic and PHP had none of that. It took me a long time to get my head around it. A colleague told me to just “believe in the magic”. Well, now I believe and I would like to share some of that “magic” with you.&lt;/p&gt;
+
+&lt;p&gt;One of the events that really help me believe was a suggestion from another colleague. He told me about this blog called &lt;a href=&quot;http://www.rubytapas.com/&quot;&gt;“Ruby Tapas”&lt;/a&gt; by &lt;a href=&quot;http://devblog.avdi.org/&quot;&gt;Avdi Grimm&lt;/a&gt;. You have to check it out! I can’t say enough good things about it but maybe I’ll save that for another blog post. Everyday I would go through his posts while commuting to work. I would sit on the train with my headphones on staring at my phone and continually saying out loud “ah that’s cool!”. My fellow commuters started to sit a little further away from me each day.&lt;/p&gt;
+
+&lt;p&gt;One of those “ah that’s cool!” moments came after I saw Avdi’s post about this strange enumerator called partition.&lt;/p&gt;
+
+&lt;h2 id=&quot;what-is-partition-and-what-does-it-do&quot;&gt;What is partition and what does it do?&lt;/h2&gt;
+
+&lt;p&gt;From &lt;a href=&quot;http://apidock.com/ruby/Enumerable/partition&quot;&gt;apidock&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;“partition() public&lt;/p&gt;
+
+&lt;p&gt;Returns two arrays, the first containing the elements of enum for which the block evaluates to true, the second containing the rest.”&lt;/p&gt;
+
+&lt;p&gt;In simpler terms it splits a collection into two subsets based on some criteria.&lt;/p&gt;
+
+&lt;p&gt;A few days later after stumbling on this gem I was tasked with building a tool for our Web Edit Team. This team will sometimes free up content on our sites and they needed a quick and easy way to find out which pieces of content are currently free. The bit of logic we have built into our code to determine if a piece of content is free doesn’t use a status attribute but instead uses start and end dates to determine if something is currently free. I thought this would be so much easier if we just had a status attribute and I could easily just query everything that had a status of active. I thought, I could make a schema change and add the new attribute and run a daily job to check and alter the status but that just seemed like crazy town. Then I thought about the Ruby “magic” and the post I saw a few days earlier about partition. Everything just fell into place. I didn’t need to make a crazy schema change it was just for a view after all. Partition was exactly what I needed.&lt;/p&gt;
+
+&lt;p&gt;So I built a helper that would take an array of hashes and easily split the array into to two arrays. An active array and an inactive array.&lt;/p&gt;
+
+&lt;noscript&gt;&lt;pre&gt;400: Invalid request
+&lt;/pre&gt;&lt;/noscript&gt;
+&lt;script src=&quot;https://gist.github.com/b4c06cc1e60351658bc9.js&quot;&gt; &lt;/script&gt;
+
+&lt;p&gt;The next part was even easier. I just needed to create a view that called the helper and returned the instance variables @active and @inactive. Once I checked for the presence of the instance variables all that was left to do was iterate over the arrays.&lt;/p&gt;
+
+&lt;noscript&gt;&lt;pre&gt;400: Invalid request
+&lt;/pre&gt;&lt;/noscript&gt;
+&lt;script src=&quot;https://gist.github.com/9c5cba7691834b525bef.js&quot;&gt; &lt;/script&gt;
+
+&lt;p&gt;So the next time you find yourself needing to split a collection into two subsets based on some criteria just remember this story and the “magic” of partition.&lt;/p&gt;
+</description>
+        <pubDate>Tue, 15 Sep 2015 19:15:00 -0400</pubDate>
+        <link>http://yourdomain.com/enumerators/2015/09/15/useful-enumerators/</link>
+        <guid isPermaLink="true">http://yourdomain.com/enumerators/2015/09/15/useful-enumerators/</guid>
+      </item>
+    
+      <item>
+        <title>The Value of Feedback: A Tale of Building An Internal Tool</title>
+        <description>&lt;p&gt;&lt;em&gt;As most of us software engineers have known, tooling is a very important part of
+our day. In fact, there was an
+&lt;a href=&quot;https://medium.com/@leeb/why-invest-in-tools-3240ce289930&quot;&gt;eloquent post&lt;/a&gt; on
+this subject matter recently. We are not the only discipline that benefit from
+such tools. Below is a tale wrought with insight on how an iterative feedback
+cycle influenced a tool we created for our WebEdit team to increase their
+productivity while creating unstructured content.&lt;/em&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;problem-scoping&quot;&gt;Problem Scoping&lt;/h2&gt;
+&lt;p&gt;&lt;em&gt;Background&lt;/em&gt;: At America’s Test Kitchen, we are working on a new content type
+(internally called an &lt;code&gt;Article&lt;/code&gt;) that is more complicated than our current
+content offerings. Instead of having highly structured data, we are designing
+this to be free flowing (think &lt;em&gt;one wysiwyg to rule them all&lt;/em&gt;).&lt;/p&gt;
+
+&lt;p&gt;&lt;em&gt;Stack&lt;/em&gt;: Our stack for this piece of content is a Ruby on Rails back-end with a
+shiny new React front-end utilizing both &lt;a href=&quot;https://facebook.github.io/flux/&quot;&gt;flux&lt;/a&gt;
+and &lt;a href=&quot;https://github.com/rackt/react-router&quot;&gt;react-router&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;em&gt;Problem&lt;/em&gt;: Our WebEdit team, the people that create all of our wonderful web 
+content, need sophisticated previewing tools for this unstructured offering.
+And that is what we are building, a semi-realtime previewing engine that gives
+content creators &lt;em&gt;instantaneous&lt;/em&gt; feedback for their free flowing content.&lt;/p&gt;
+
+&lt;h2 id=&quot;slight-tangent-about-why-article-content-is-a-big-deal&quot;&gt;Slight Tangent About Why Article Content Is A Big Deal&lt;/h2&gt;
+&lt;p&gt;&lt;em&gt;This is purely from a technical standpoint.&lt;/em&gt;&lt;br /&gt;
+To date, the majority of our content is denormalized and very rigid in
+structure. We have given our WebEdit team a CMS that mostly involves inputting 
+text and creating necessary associations between our content (there are very 
+minimal text fields that allow for custom HTML). This general work flow gives us
+consistency on our front-end for our users but really doesn’t allow WebEdit to
+create custom content from a layout perspective. Look at the two pdfs 
+below as examples of &lt;code&gt;Article&lt;/code&gt; content:&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;/pdfs/Article_Brownies.pdf&quot;&gt;Chewy Brownies&lt;/a&gt;&lt;br /&gt;
+&lt;a href=&quot;/pdfs/Article_BakedAlaska.pdf&quot;&gt;Baked Alaska&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;It goes without saying that these pages are much, &lt;em&gt;much&lt;/em&gt; more engaging than our
+current crop of documents. That is not meant to be a knock on  our current
+documents. It’s just a different means of conveying to our users
+what went right and what went &lt;em&gt;wrong&lt;/em&gt; in the kitchen as we develop recipes. We
+do not have a content vehicle to effectively communicate what
+went wrong in the kitchen because failures differ wildly from recipe to recipe.
+What fails for a brownie may be absolutely different than what can fail for
+flank steak. Conveying this &lt;em&gt;failure&lt;/em&gt; message effectively is the goal of our 
+upcoming Article content.&lt;/p&gt;
+
+&lt;h2 id=&quot;minimum-viable-product&quot;&gt;Minimum Viable Product&lt;/h2&gt;
+&lt;p&gt;Our prototype is going to be a proof of concept. Technologies used:
+&lt;code&gt;JSXTransformer&lt;/code&gt;, &lt;code&gt;iframe&lt;/code&gt;, &lt;code&gt;jQuery&lt;/code&gt;, &lt;code&gt;React&lt;/code&gt;. In our current CMS (created with
+bootstrap), we are going to have a preview button that brings said &lt;code&gt;iframe&lt;/code&gt; into
+view with the click of a button. As someone changes the one html field, it will
+re-render the iframe and reload the entire page with the new data (similar
+to CodePen.io).&lt;/p&gt;
+
+&lt;iframe width=&quot;560&quot; height=&quot;315&quot; src=&quot;https://www.youtube.com/embed/1OhoJW5GqFM&quot; frameborder=&quot;0&quot; allowfullscreen=&quot;&quot;&gt;&lt;/iframe&gt;
+
+&lt;p&gt;Holy smokes Batman! Well, we are off to a great start. You can see that as we 
+type, we have a request firing off to reload the page with the new value. The
+&lt;code&gt;ArticlePreviewContainer&lt;/code&gt; then transpiles the JSX and evaluates it.&lt;/p&gt;
+
+&lt;p&gt;The original thinking behind this was to make it similar to CodePen using some
+&lt;a href=&quot;https://gist.github.com/ncerminara/11257943&quot;&gt;Base64 shenanigans gist&lt;/a&gt; and created
+both a Rails route and React route both looking like: &lt;code&gt;/admin/article/:id/:base&lt;/code&gt;.
+Using the gist above, we are encoding the value of the body input into &lt;code&gt;Base64&lt;/code&gt;
+and passing it to the routes for the &lt;code&gt;:base&lt;/code&gt; parameter.  We even having it 
+working with one of our custom React components! Hot Sauce! Here is what our 
+React Preview Component looks like:&lt;/p&gt;
+
+&lt;noscript&gt;&lt;pre&gt;400: Invalid request
+&lt;/pre&gt;&lt;/noscript&gt;
+&lt;script src=&quot;https://gist.github.com/92afacec15a159292256.js&quot;&gt; &lt;/script&gt;
+
+&lt;p&gt;You might ask yourself, “What’s up with that RecipeIndexPage require at the top?”
+Currently, it is the only custom component I am allowing to be rendered in the
+&lt;code&gt;ArticlePreviewContainer&lt;/code&gt; React component. Requiring it was the only way I
+thought to show WebEdit what it looks like when using custom components.&lt;/p&gt;
+
+&lt;p&gt;Speaking of WebEdit, it’s time to meet with them to get their thoughts on this.&lt;/p&gt;
+
+&lt;h2 id=&quot;mvp---feedback-cycle&quot;&gt;MVP - Feedback Cycle&lt;/h2&gt;
+&lt;p&gt;&lt;em&gt;(Just going to put my scribbled down notes from WebEdit below…)&lt;/em&gt;&lt;br /&gt;
+- This is really cool, but does it have to be inside the same window? Can we 
+put it in it’s own window?&lt;br /&gt;
+- Can we get some sort of error message if we write bad markup (JSX)?&lt;br /&gt;
+- Can we get documentation for the various components we have access too?&lt;/p&gt;
+
+&lt;p&gt;&lt;em&gt;(Some notes I took down when dogfooding it to the engineering team…)&lt;/em&gt;&lt;br /&gt;
+- Iframe? Wat? Why aren’t you using postMessage?&lt;br /&gt;
+- We should definitely whitelist things that they have access too using 
+&lt;code&gt;React.Children.map&lt;/code&gt; for this content.&lt;br /&gt;
+- &lt;code&gt;JSXTransformer&lt;/code&gt; is being deprecated. Use Babel and pass over the transpiledJS&lt;/p&gt;
+
+&lt;p&gt;Whoa. All great, great ideas. Definitely going to incorporate this feedback into
+my MVP.&lt;/p&gt;
+
+&lt;h2 id=&quot;version-2---the-previewwindow-and-postmessageand-linting&quot;&gt;Version 2 - The previewWindow and postMessage…and linting?&lt;/h2&gt;
+&lt;p&gt;Now here is where the fun begins!&lt;/p&gt;
+
+&lt;p&gt;Technologies used:
+&lt;a href=&quot;https://github.com/babel/babel/blob/master/src/babel/api/browser.js&quot;&gt;Babel browser.js&lt;/a&gt;,
+&lt;a href=&quot;https://github.com/eslint/eslint&quot;&gt;eslint&lt;/a&gt;,
+&lt;a href=&quot;http://underscorejs.org/&quot;&gt;Underscore&lt;/a&gt;,
+&lt;a href=&quot;https://developer.mozilla.org/en-US/docs/Web/API/Window/postMessage&quot;&gt;postMessage&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;Technologies being removed: &lt;code&gt;iframe&lt;/code&gt;, &lt;code&gt;JSXTransformer&lt;/code&gt;, &lt;code&gt;Base64 gist&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;The only real code to care about here is:&lt;/p&gt;
+&lt;noscript&gt;&lt;pre&gt;400: Invalid request
+&lt;/pre&gt;&lt;/noscript&gt;
+&lt;script src=&quot;https://gist.github.com/fe02ffe6f8a39a3668ef.js&quot;&gt; &lt;/script&gt;
+
+&lt;p&gt;We register a keyup event on the singular input field with a delay using 
+Underscore’s debounce method. When the callback is invoked, it performs the
+following functions:&lt;br /&gt;
+1) Lints the JSX.&lt;br /&gt;
+2a) On failure, disable all submit buttons and display an error message.&lt;br /&gt;
+2b On success, enable all submit buttons and transform the JSX using 
+babel (and wrap it in an &lt;code&gt;Article&lt;/code&gt; react component for…reasons).&lt;br /&gt;
+3) After transformation, it checks for our previewWindow and posts the message
+to the previewWindow.&lt;/p&gt;
+
+&lt;p&gt;Here is what it looks like:&lt;/p&gt;
+
+&lt;iframe width=&quot;560&quot; height=&quot;315&quot; src=&quot;https://www.youtube.com/embed/YO7VZx0zjw0&quot; frameborder=&quot;0&quot; allowfullscreen=&quot;&quot;&gt;&lt;/iframe&gt;
+
+&lt;p&gt;Time for one more round of feedback!&lt;/p&gt;
+
+&lt;h2 id=&quot;version-2---feedback-cycle&quot;&gt;Version 2 - Feedback Cycle&lt;/h2&gt;
+&lt;p&gt;&lt;em&gt;(Going back to my scribbled down notes from WebEdit…)&lt;/em&gt;&lt;br /&gt;
+- This is much better. But when I update the title, it doesn’t update!&lt;br /&gt;
+- We still need a style guide to let us know what the markup looks like and
+what it outputs.&lt;/p&gt;
+
+&lt;p&gt;&lt;em&gt;(Going back to my scribbled down notes from engineering…)&lt;/em&gt;&lt;br /&gt;
+- Where is my white list!!?!?&lt;br /&gt;
+- Where is the friggin white list??&lt;br /&gt;
+- Moar white list please!&lt;/p&gt;
+
+&lt;p&gt;Alright…thanks guys. I can feel the feature already maturing as I received no
+feedback on the actual implementation of it and mostly received feedback on 
+evolving it and protecting WebEdit where I can (white listing). We are definitely
+on the right track, so let’s start moving onto version 3!&lt;/p&gt;
+
+&lt;h2 id=&quot;version-3---final-final-release-maybe&quot;&gt;Version 3 - Final Final Release (Maybe?)&lt;/h2&gt;
+&lt;p&gt;So instead of listening to a single input (on ‘keyup’), we need to bind our 
+postMessage event to more inputs.&lt;/p&gt;
+
+&lt;p&gt;Here is the code for said event passing JSON and listening to &lt;em&gt;specific&lt;/em&gt; inputs.&lt;/p&gt;
+&lt;noscript&gt;&lt;pre&gt;400: Invalid request
+&lt;/pre&gt;&lt;/noscript&gt;
+&lt;script src=&quot;https://gist.github.com/d35e6fcda00b68301c74.js&quot;&gt; &lt;/script&gt;
+
+&lt;p&gt;White listing didn’t prove very difficult either. We created a mixin that would
+traverse the component’s children and return null if it was 
+not in the list (hence why we wrapped the resultant JSX in &lt;code&gt;&amp;lt;Article&amp;gt;&lt;/code&gt; tags).
+Currently, it only supports white listing of HTML elements that React supports.
+We will be modifying the conditional logic to also check for a white list of 
+custom components in the very near future.&lt;/p&gt;
+
+&lt;h3 id=&quot;whitelist&quot;&gt;Whitelist:&lt;/h3&gt;
+&lt;noscript&gt;&lt;pre&gt;400: Invalid request
+&lt;/pre&gt;&lt;/noscript&gt;
+&lt;script src=&quot;https://gist.github.com/e501bdd75b8971f84975.js&quot;&gt; &lt;/script&gt;
+
+&lt;h3 id=&quot;article-component-white-listing&quot;&gt;Article Component White Listing:&lt;/h3&gt;
+&lt;noscript&gt;&lt;pre&gt;400: Invalid request
+&lt;/pre&gt;&lt;/noscript&gt;
+&lt;script src=&quot;https://gist.github.com/b8e91ccdb26d7e6b7337.js&quot;&gt; &lt;/script&gt;
+
+&lt;p&gt;What’s this look like now?&lt;/p&gt;
+
+&lt;iframe width=&quot;560&quot; height=&quot;315&quot; src=&quot;https://www.youtube.com/embed/3mkwPOC_uYo&quot; frameborder=&quot;0&quot; allowfullscreen=&quot;&quot;&gt;&lt;/iframe&gt;
+
+&lt;p&gt;As for the WebEdit’s need for documented components, we found an
+&lt;a href=&quot;https://github.com/jmfurlott/react-styleguide&quot;&gt;open sourced project&lt;/a&gt; that has
+been amazing for conveying both markup and the actual look of the component.&lt;/p&gt;
+
+&lt;h2 id=&quot;conclusion&quot;&gt;Conclusion&lt;/h2&gt;
+&lt;p&gt;Without a doubt the feedback cycle from both the end user of this tool (WebEdit)
+and from other engineers vastly improved the quality and maintainability of the
+tool. Going from MVP to something much more robust and maintainable can only be
+realized by getting feedback early and often as features are worked on.&lt;/p&gt;
+
+&lt;p&gt;Most importantly, WebEdit can now be highly productive in using this near
+real-time tool to build really amazing content.&lt;/p&gt;
+</description>
+        <pubDate>Wed, 15 Jul 2015 19:15:00 -0400</pubDate>
+        <link>http://yourdomain.com/process/tooling/2015/07/15/the-value-of-feedback/</link>
+        <guid isPermaLink="true">http://yourdomain.com/process/tooling/2015/07/15/the-value-of-feedback/</guid>
+      </item>
+    
+      <item>
+        <title>A Little Style for Our Stylesheets</title>
+        <description>&lt;p&gt;I’ve written previously on this blog about &lt;a href=&quot;http://americastestkitchen.github.io/css/2014/10/05/css-debates/&quot;&gt;CSS best practices&lt;/a&gt;, and in the eight months since that post, our team has continued to churn out new CSS like there’s no tomorrow. At the beginning of this year, we embarked on a massive redesign of one of our sites, and that meant new color schemes, new typography, and, probably most notably, responsive layouts. Given that this also meant we would be able to write brand new stylesheets for essentially brand new pages, and that we would (eventually) be able to scrap most of our old styles, this redesign seemed like the perfect opportunity to set some standards for our CSS going forward in the form of a CSS style guide.&lt;/p&gt;
+
+&lt;p&gt;As it turns out, developing a first draft of the style guide was the easy part. There are lots of great examples out there (I give credit to &lt;a href=&quot;https://medium.com/@fat/mediums-css-is-actually-pretty-fucking-good-b8e2a6c78b06&quot;&gt;this post&lt;/a&gt; for being my personal inspiration for this whole endeavor), and after writing CSS for a certain amount of time, a lot of the pain points become clear, so it didn’t take long for us to come up with a list of rules that we wanted to follow.&lt;/p&gt;
+
+&lt;p&gt;For a little more context, the redesigned pages were built using React, and we are essentially maintaining a React app within our Rails app in order to segregate these new pages from our legacy views. Since all of our new React code and the associated styles were housed in their own &lt;code&gt;/react&lt;/code&gt; directory, we were able to use the structure of our React components to drive the organization of our new stylesheets, without having to worry about reorganizing our legacy stylesheets. With the new pages being fully responsive, we got to use some pretty nice gems (&lt;code&gt;susy&lt;/code&gt; for our grid layout, &lt;code&gt;breakpoint&lt;/code&gt; for clean media queries), and we also were able to use our different breakpoints to inform stylesheet structure.&lt;/p&gt;
+
+&lt;p&gt;With that, I give you our style guide (a working draft, I’ll call it).&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;h2 id=&quot;file-structure&quot;&gt;File Structure&lt;/h2&gt;
+&lt;ul&gt;
+  &lt;li&gt;&lt;code&gt;main.scss&lt;/code&gt; imports all of our partials and mixins, which are organized into logical blocks with comments.&lt;/li&gt;
+  &lt;li&gt;Folders:
+    &lt;ul&gt;
+      &lt;li&gt;Feature folder with subfolders for breakpoints (e.g. &lt;code&gt;search/desktop&lt;/code&gt; &lt;code&gt;search/mobile&lt;/code&gt; &lt;code&gt;search/tablet&lt;/code&gt;)&lt;/li&gt;
+      &lt;li&gt;Mixins folder (includes any polyfills)&lt;/li&gt;
+      &lt;li&gt;Layouts folder (e.g. for a &lt;code&gt;_grid.scss&lt;/code&gt; file)&lt;/li&gt;
+      &lt;li&gt;Vendors folder (e.g. for a &lt;code&gt;_normalize.scss&lt;/code&gt; file)&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;scss-implementable-rules&quot;&gt;SCSS Implementable Rules&lt;/h2&gt;
+
+&lt;h3 id=&quot;naming&quot;&gt;Naming&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;Prepend ids and classes being bound by JavaScript with &lt;code&gt;js-&lt;/code&gt;.&lt;/li&gt;
+  &lt;li&gt;Prepend ids and classes being bound by React with &lt;code&gt;react-&lt;/code&gt;.&lt;/li&gt;
+  &lt;li&gt;Prepend state-based css classes with &lt;code&gt;is-&lt;/code&gt;.&lt;/li&gt;
+  &lt;li&gt;Prepend newly created mixins with &lt;code&gt;m-&lt;/code&gt;.&lt;/li&gt;
+  &lt;li&gt;Use BEM (block, element, modifier) naming conventions for classes whenever possible.
+    &lt;ul&gt;
+      &lt;li&gt;E.g.: &lt;code&gt;gallery__image--large&lt;/code&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;selectors&quot;&gt;Selectors&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;To avoid issues with specificity, never use an id as the selector for styling an element.
+    &lt;ul&gt;
+      &lt;li&gt;We have made a few exceptions to this rule in order to prevent styles for new features from conflicting with legacy styles, with the intention of removing references to ids in stylesheets once legacy styles are sunsetted.&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;Use the minimum number of selectors you need to target an element for styling.&lt;/li&gt;
+  &lt;li&gt;To avoid adding complexity, try to avoid nesting selectors when possible.
+    &lt;ul&gt;
+      &lt;li&gt;A good exception to this rule would be the use of pseudo selectors in the vein of &lt;code&gt;nth-child&lt;/code&gt; and &lt;code&gt;nth-of-type&lt;/code&gt;.&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;variables&quot;&gt;Variables&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;Make use of our &lt;code&gt;z-index&lt;/code&gt; scale file (which borrows heavily from &lt;a href=&quot;https://medium.com/@fat/mediums-css-is-actually-pretty-fucking-good-b8e2a6c78b06&quot;&gt;Medium’s &lt;code&gt;z-index&lt;/code&gt; scale&lt;/a&gt;. Here’s what it looks like:&lt;/li&gt;
+&lt;/ul&gt;
+&lt;noscript&gt;&lt;pre&gt;400: Invalid request
+&lt;/pre&gt;&lt;/noscript&gt;
+&lt;script src=&quot;https://gist.github.com/be26dedc217a3e08f8c1.js&quot;&gt; &lt;/script&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Use our own line-height, font-weight, and letter-spacing scale files.&lt;/li&gt;
+  &lt;li&gt;Color variables and font variables should be declared in separate files and referenced whenever possible.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;general-style&quot;&gt;General Style&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;Comma separated selectors should each be declared on a new line.&lt;/li&gt;
+  &lt;li&gt;Include exactly one line break after each selector block.&lt;/li&gt;
+  &lt;li&gt;Use single quotes for URLs.&lt;/li&gt;
+  &lt;li&gt;Use the font shorthand when possible (&lt;code&gt;font: 14px $proximanova $black&lt;/code&gt;).&lt;/li&gt;
+  &lt;li&gt;&lt;code&gt;@include&lt;/code&gt;s (for breakpoints) should be declared at the top of a given breakpoint-specific stylesheet, and should wrap all breakpoint-specific styles.&lt;/li&gt;
+  &lt;li&gt;Always use &lt;code&gt;rgb&lt;/code&gt; and &lt;code&gt;rgba&lt;/code&gt; for colors, to avoid mixing hex codes and &lt;code&gt;rgba&lt;/code&gt; for instances where transparency is needed.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;grid&quot;&gt;Grid&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;Elements should always be on the established grid (the assumption being that the design team will always place elements in the context of a grid going forward).&lt;/li&gt;
+  &lt;li&gt;Horizontal padding and margins should be of some factor of our established gutter widths.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;breakpoints&quot;&gt;Breakpoints&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;Place breakpoint declarations inside a new file and folder &lt;code&gt;BREAKPOINT_NAME/component_name&lt;/code&gt;, per the file structure above (e.g. &lt;code&gt;tablet/_load_more_button.scss&lt;/code&gt;).&lt;/li&gt;
+  &lt;li&gt;As much as possible, avoid duplication of shared styles across different breakpoints.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;hr /&gt;
+
+&lt;h2 id=&quot;lessons-learned&quot;&gt;Lessons Learned&lt;/h2&gt;
+
+&lt;p&gt;The hard part, maybe not surprisingly, has been actually implementing the rules we prescribed above. So in addition to sharing our style guide, I also wanted to share a few things I learned in implementing it, which will hopefully help anyone out there who is thinking about implementing a CSS style guide of their own.&lt;/p&gt;
+
+&lt;h3 id=&quot;be-vigilant&quot;&gt;Be vigilant&lt;/h3&gt;
+
+&lt;p&gt;I’ve learned the hard way the importance of getting CSS code into as good a state as possible before calling a feature “done”. We’ve all said to ourselves “I’m just going to get this to look right, and then I’ll come back and refactor later.” &lt;em&gt;Except that you won’t. Because &lt;strong&gt;refactoring CSS is terrible&lt;/strong&gt;.&lt;/em&gt; Class names tend to be quite “sticky” and resistent to refactoring given the way they get reused, and after giving in to a suboptimal solution in order to fix a bug quickly, changing things can feel precarious. This is why it’s worth spending a little extra time up front to make sure you are following your own rules (harder to do than I thought). The same goes for reviewing code from other team members – it’s worth being a little nitpicky on the initial pull request for the sake of everyone’s future sanity.&lt;/p&gt;
+
+&lt;h3 id=&quot;make-peace-with-your-legacy-styles&quot;&gt;Make peace with your legacy styles&lt;/h3&gt;
+
+&lt;p&gt;Despite my idealistic visions of creating perfect, beautiful CSS without the weighty baggage of our legacy styles dragging us down, the reality of the situation was a little different. Even though we were building new pages, we were going to be slowly rolling them out to users, while still maintaining many of the existing pages (and thus stylesheets) for quite some time. Our CSS could still be beautiful, but we needed a strategy to combat legacy style conflicts. Our approach for this has evolved over time, from commenting any lines of code that were written to handle legacy style issues, to temporarily scoping new styles under top-level id selectors (and hating ourselves for it), to creating a &lt;code&gt;resets&lt;/code&gt; directory to house only styles that were needed to reconcile conflicts between old and new styles. None of these strategies have been ideal, but the main point here is that, even when I thought we had found the perfect time to implement a CSS style guide, with minimal refactoring of legacy code required, it still had (and continues to have) its challenges. So if you’re waiting for that perfect time to implement your own style guide, the good news is you don’t have to wait anymore! Right now is probably as good a time as any to start.&lt;/p&gt;
+
+&lt;h3 id=&quot;keep-iterating&quot;&gt;Keep iterating&lt;/h3&gt;
+
+&lt;p&gt;My final takeaway from this process is the importance of regularly reevaluating the utility of a style guide’s rules. After all, such a guide is meant to make our lives as programmers easier, in addition to improving our code quality. As we started using our guide, we thought of things we needed to add (a &lt;code&gt;vendors&lt;/code&gt; directory), exceptions we needed to make (when nesting is okay) and rules we needed to clarify (why are we using this font scale thing again?). Even as I write this, I’m thinking I should ask the team again if they have more ideas for updates. So as much as rules are made to be followed (that’s the saying, right?), since they are going to be internal rules for our team, I think there is always room to revisit and iterate. And in the process, I think we’ve made our stylesheets more readable, more logical, and quite a bit more bearable to work with.&lt;/p&gt;
+
+</description>
+        <pubDate>Mon, 29 Jun 2015 16:00:00 -0400</pubDate>
+        <link>http://yourdomain.com/2015/06/29/implementing-a-css-style-guide/</link>
+        <guid isPermaLink="true">http://yourdomain.com/2015/06/29/implementing-a-css-style-guide/</guid>
+      </item>
+    
+      <item>
+        <title>One Big Advantage to Remote Employment</title>
+        <description>&lt;p&gt;I’ve worked almost my entire adult life from home: first as a translator, then
+as a programmer. In fact, in the twelve years since finishing college, I’ve
+only worked in a office for eighteen months, eleven of which were in Russia, so
+I’m not sure that even counts.&lt;/p&gt;
+
+&lt;p&gt;My remote work history falls into three buckets:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;em&gt;Self-employment.&lt;/em&gt; You’d better like solitude for this (I do), because it
+involves basically &lt;em&gt;no human contact at all&lt;/em&gt; during working hours. I’m not
+sure I’d recommend this to others.&lt;/li&gt;
+  &lt;li&gt;&lt;em&gt;All-remote teams.&lt;/em&gt; This is my favorite arrangement. You get the same level
+of quiet most of the time and still have your Get Out Of Shower Free card to
+play, but you have other humans (or maybe chatbots that pass the Turing Test –
+I haven’t always managed to verify) to bounce ideas off, assist with debugging,
+etc.&lt;/li&gt;
+  &lt;li&gt;&lt;em&gt;Mixed remote/on-site teams.&lt;/em&gt; This is perhaps the most common arrangment I’ve
+encountered, and it’s what we have at ATK, but it brings with it a particular
+set of challenges.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;In the past year and a half, we’ve grown from a team of four to a team of
+eleven, and though others occasionally work from home when needed, only two of
+us live far enough outside of the Boston area that we consistently work
+remotely. The shift in our remote:on-site ratio has produced a few wrinkles,
+but I am generally still a very happy remote worker because of all the
+advantages and flexibility that remote work confers.&lt;/p&gt;
+
+&lt;p&gt;I’m feeling particularly good about one aspect of this today:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/office.jpg&quot; alt=&quot;The Office.&quot; /&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;i-am-actually-writing-this-in-a-tent&quot;&gt;I AM ACTUALLY WRITING THIS IN A TENT&lt;/h2&gt;
+
+&lt;p&gt;That is correct. The photo above is my “Thursday/Friday office.” I have to
+admit that I actually structured this post so that the picture would be below
+the fold for dramatic effect. I thought about titling this “Tent-Driven
+Development,” but that could have given it away. But seriously, working in the
+woods is amazing, and I really suggest you try it.&lt;/p&gt;
+
+&lt;h3 id=&quot;how-to-work-in-a-tent&quot;&gt;How to work in a tent&lt;/h3&gt;
+
+&lt;p&gt;There are four principle components to an office campsite:&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;&lt;em&gt;Land&lt;/em&gt;. In my case, we are converting a piece of property into a farm, so I
+get this for free. But campgrounds are everywhere, and are often very
+inexpensive.&lt;/li&gt;
+  &lt;li&gt;&lt;em&gt;Sustenance&lt;/em&gt;. Bring water – lots of water – and a cooler full of snacks.&lt;/li&gt;
+  &lt;li&gt;&lt;em&gt;Power&lt;/em&gt;. If you are at the right campground, this is no big deal. In my
+case, I have a GoalZero 150Wh battery with a small solar charger. On sunny
+days, I can get 2 full charges into my 15” MBP, 1.5 if it’s cloudy. This
+doesn’t leave a lot of room for running iTunes all day, or for forgetting to
+bring your laptop fully charged.&lt;/li&gt;
+  &lt;li&gt;&lt;em&gt;Internet&lt;/em&gt;. I ended up getting a Verizon hotspot, which works extremely
+well. It is, in fact, substantially faster than my Charter broadband at home.
+At $50/month for 5GB of transfer, it’s not exactly cheap, but it turns out that
+is not such a bad thing.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h3 id=&quot;improved-office-productivity-through-outdoorsmanship&quot;&gt;Improved office productivity through outdoorsmanship&lt;/h3&gt;
+
+&lt;p&gt;I have found that my coding hours in a tent produce a lot more working,
+well-reasoned code than those during the rest of the week under fluorescent
+lights. Why?&lt;/p&gt;
+
+&lt;p&gt;The first reason for this is bandwidth restriction. If I exceed my 4GB
+limit, I get hit another $15 for every gigabyte of overage. This incentivizes
+me not to click on the cat pictures or even conference presentations that
+bounce around in our Slack rooms. StackOverflow pages take up very few bytes on
+the wire compared to YouTube streams.&lt;/p&gt;
+
+&lt;p&gt;A more important aspect, however, is being visibly and audibly surrounded by a
+variety of living things. If you have never found your job at least a little
+dehumanizing – you know, staring into a glowing rectangle and smashing buttons
+to send signals to a robot – I’m fairly suspicious that you’ve already been
+assimilated by the Borg. Sometimes I see a deer, or a fox, when I’m up getting
+a drink; sometimes I can look up and see our resident redtail hawk circling
+over the clearing. We know that &lt;a href=&quot;http://well.blogs.nytimes.com/2013/03/27/easing-brain-fatigue-with-a-walk-in-the-park/?_r=0&quot;&gt;spending time with trees reduces
+stress&lt;/a&gt;,
+and we know that programming can be stressful. It is great to be able to get
+that relief immediately by looking around you, rather than waiting for the end
+of the work day to go to the park.&lt;/p&gt;
+
+&lt;h3 id=&quot;taking-it-up-a-notch-the-kickstarter-campaign&quot;&gt;Taking it up a notch: the Kickstarter campaign&lt;/h3&gt;
+
+&lt;p&gt;Just kidding. That would be ridiculous.&lt;/p&gt;
+</description>
+        <pubDate>Sat, 13 Jun 2015 19:15:00 -0400</pubDate>
+        <link>http://yourdomain.com/2015/06/13/tents/</link>
+        <guid isPermaLink="true">http://yourdomain.com/2015/06/13/tents/</guid>
+      </item>
+    
+      <item>
+        <title>The Value of Postmortems</title>
+        <description>&lt;p&gt;It’s 2am and your phone wakes you. Servers down. Sleepily, you muster the energy
+to get out of bed and start troubleshooting system issues and resolve them after
+two hours. You are able to go back to sleep for that extra beauty rest
+before going into work. Of course the moment you are in the office, everyone
+wants to know of your heroic deeds, from the steps needed to resolve the issue
+to the actual issue at hand. You painstakingly recount the root issue and the
+attempt to discuss the exact steps taken to solve it. Everyone is intently
+listening to your story when all of a sudden, you forget the order of operations
+needed to resolve the issue.&lt;/p&gt;
+
+&lt;p&gt;Whether or not you forget the replication steps to solve the issue, this 
+rather familiar scenario is where a postmortem can help your team. A postmortem
+would immediately disseminate the necessary information (asynchronously)
+reducing the need for this somewhat awkward group discussion. In addition,
+the engineer should be receiving &lt;a href=&quot;http://media.giphy.com/media/Cp9cUJc4hgNvG/giphy.gif&quot;&gt;the highest of fives&lt;/a&gt;
+for getting the business back online &lt;em&gt;AND&lt;/em&gt; appropriately documenting every
+step of the process.&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;h2 id=&quot;shifting-to-a-blameless-culture&quot;&gt;Shifting to a Blameless Culture&lt;/h2&gt;
+&lt;p&gt;When considering postmortems for your company, one has to be mindful of
+maintaing a culture of being completely &lt;a href=&quot;https://codeascraft.com/2012/05/22/blameless-postmortems/&quot;&gt;blameless&lt;/a&gt;.
+This &lt;em&gt;has to exist&lt;/em&gt; for postmortems to have any value to an organization.
+The main point of postmortems is to disseminate information and educate team 
+members on specific issues that bring down systems. We want to break up those
+important system wide knowledge silos in as positive a fashion as we can.&lt;/p&gt;
+
+&lt;p&gt;Let’s say Greg had been working rather late one evening to ship a feature. He had
+accidentally left out the all important &lt;code&gt;:&lt;/code&gt; in our &lt;code&gt;clock.rb&lt;/code&gt; file, causing all
+of our scheduled jobs to fail. This failure actually went undetected for an
+extra day or two as our error provider never picked up any errors (our clock
+process would not boot up).&lt;/p&gt;
+
+&lt;p&gt;More often than not, Greg will more than likely already feel terrible for being
+the root contributor to the issue at hand. Adding a layer of blame to that is
+just not needed or warranted and may have negative effects on his professional
+development.&lt;/p&gt;
+
+&lt;p&gt;For the sake of our postmortem, it also does not matter one bit that Greg was at 
+fault for this issue. What matters is that the symptoms of the issue are 
+correctly documented, the solution is well documented, and there are regression
+tests for this scenario (when applicable).&lt;/p&gt;
+
+&lt;h2 id=&quot;tools-we-use&quot;&gt;Tools We Use&lt;/h2&gt;
+&lt;p&gt;We really enjoy using &lt;a href=&quot;https://github.com/discourse/discourse&quot;&gt;discourse&lt;/a&gt; for
+documenting everything that relates to our development processes, including
+our postmortems. Not only does it enable a team of 
+developers to document all the things using the tools we know and love
+(i.e. Markdown), but the threaded forum format &lt;em&gt;encourages continued discussion&lt;/em&gt; 
+of the issues involved. The search quality is pretty good, too.&lt;/p&gt;
+
+&lt;h2 id=&quot;overcoming-hurdles&quot;&gt;Overcoming Hurdles&lt;/h2&gt;
+&lt;p&gt;4am isn’t the easiest time to write eloquent prose. As engineers, we need to be in 
+the habit of taking notes and snapshots as we go (repeatable trace of commands,
+analysis of logs, etc), being mindful of the need to compile a postmortem afterwards.
+Writing a postmortem well after the events have
+transpired with little documentation can lead to incorrect diagnosis and
+misremembering the various analyses performed to determine the root cause of the
+issue.  It’s paramount that the postmortem be written no later than 48 hours after the
+downtime. Analysis and command history get lost quickly, especially in the heat
+of the moment.&lt;/p&gt;
+
+&lt;p&gt;Any organization that is technical in nature should implement some form of 
+documentation about downtime and critical issues. The thoughtful curation and 
+creation of these long lived documents will help any organization in the long
+term through knowledge dissemination.&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://news.ycombinator.com/item?id=9538509&quot;&gt;Discuss on HN&lt;/a&gt;&lt;/p&gt;
+</description>
+        <pubDate>Wed, 13 May 2015 09:15:00 -0400</pubDate>
+        <link>http://yourdomain.com/culture/engineering/2015/05/13/the-value-of-postmortems/</link>
+        <guid isPermaLink="true">http://yourdomain.com/culture/engineering/2015/05/13/the-value-of-postmortems/</guid>
+      </item>
+    
+      <item>
+        <title>Postgres Storage for Rollout Gem</title>
+        <description>&lt;p&gt;&lt;a href=&quot;https://github.com/FetLife/rollout&quot;&gt;Rollout&lt;/a&gt; is a popular Ruby gem that helps manage the sometimes tedious nature
+of feature flagging. It was originally architected with Redis as a dependency.
+While we do love Redis immensely, we felt now was not quite the time to add yet
+another piece of infrastructure to our application. Thankfully, a semi-recent
+update for Rollout removed the Redis dependency and allows the end user to use
+any key-value store. The only requirements are that an instance of the store
+needs to respond to the &lt;code&gt;get&lt;/code&gt;, &lt;code&gt;set&lt;/code&gt;, and &lt;code&gt;del&lt;/code&gt; methods.&lt;/p&gt;
+
+&lt;h2 id=&quot;the-decision&quot;&gt;The Decision&lt;/h2&gt;
+
+&lt;p&gt;Given that we are not ready to add another piece of infrastructure to our stack,
+we decided to create a wrapper for &lt;a href=&quot;http://www.postgresql.org/docs/9.0/static/hstore.html&quot;&gt;PostgreSQL’s Hstore&lt;/a&gt; feature.
+We created a new ActiveRecord model called FeatureFlag that has a singular
+attribute (migration and model below).&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;CreateFeatureFlags&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;ActiveRecord&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;Migration&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;change&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;create_table&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:feature_flags&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;|&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;t&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;|&lt;/span&gt;
+      &lt;span class=&quot;n&quot;&gt;t&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;hstore&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:data&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+  
+    &lt;span class=&quot;n&quot;&gt;execute&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;CREATE INDEX feature_flags_data ON feature_flags USING GIN(data)&amp;#39;&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;FeatureFlag&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;ActiveRecord&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;Base&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;So far, so good. We didn’t necessarily need an empty AR model and could have
+simply written some SQL statements inside of some PG connections, but most of 
+our business logic resides in AR.&lt;/p&gt;
+
+&lt;h2 id=&quot;implementing-the-store&quot;&gt;Implementing the Store&lt;/h2&gt;
+
+&lt;p&gt;Now for the fun part! As stated above, an instance of our store needs to be able
+to handle the &lt;code&gt;get&lt;/code&gt;, &lt;code&gt;set&lt;/code&gt;, and &lt;code&gt;del&lt;/code&gt; methods appropriately. Just from perusing the 
+rollout codebase, the methods are defined as the following:
+- &lt;code&gt;get&lt;/code&gt; takes a key argument and returns the value for the key
+- &lt;code&gt;set&lt;/code&gt; takes two arguments (key, value) and creates or updates the key-value pair
+- &lt;code&gt;del&lt;/code&gt; takes a key argument and deletes the key-value pair&lt;/p&gt;
+
+&lt;p&gt;Below is the code that handles these scenarios.&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;RolloutPostgresStore&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;initialize&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;model&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;attribute&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;vi&quot;&gt;@model&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;model&lt;/span&gt;
+    &lt;span class=&quot;vi&quot;&gt;@attribute&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;attribute&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+
+  &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;get&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;key&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;flag&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;vi&quot;&gt;@model&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;where&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;#{&lt;/span&gt;&lt;span class=&quot;vi&quot;&gt;@attribute&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt; ? &amp;#39;&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;#{&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;key&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;#39;&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;first&lt;/span&gt;
+      &lt;span class=&quot;n&quot;&gt;flag&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;send&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;vi&quot;&gt;@attribute&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;key&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+
+  &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;set&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;key&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;value&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;current&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;get&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;key&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+
+    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;current&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;nil?&lt;/span&gt;
+      &lt;span class=&quot;n&quot;&gt;create_feature_flag&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;key&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;value&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;else&lt;/span&gt;
+      &lt;span class=&quot;n&quot;&gt;update_flag&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;key&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;value&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+
+  &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;del&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;key&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;flag&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;vi&quot;&gt;@model&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;where&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;#{&lt;/span&gt;&lt;span class=&quot;vi&quot;&gt;@attribute&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt; ? &amp;#39;&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;#{&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;key&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;#39;&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;first&lt;/span&gt;
+      &lt;span class=&quot;n&quot;&gt;flag&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;delete&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+
+  &lt;span class=&quot;kp&quot;&gt;private&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;create_feature_flag&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;key&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;value&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;flag&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;vi&quot;&gt;@model&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;new&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;flag&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;send&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;#{&lt;/span&gt;&lt;span class=&quot;vi&quot;&gt;@attribute&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;=&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;key&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;value&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;})&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;flag&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;save&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+
+  &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;update_flag&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;key&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;value&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;flag&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;vi&quot;&gt;@model&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;where&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;#{&lt;/span&gt;&lt;span class=&quot;vi&quot;&gt;@attribute&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt; ? &amp;#39;&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;#{&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;key&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;#39;&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;first&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;flag&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;send&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;vi&quot;&gt;@attribute&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;key&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;value&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;flag&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;send&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;#{&lt;/span&gt;&lt;span class=&quot;vi&quot;&gt;@attribute&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;_will_change!&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;flag&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;save&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;It is relatively straightforward. We really utilize ActiveRecord a ton here but
+I think it’s an okay decision given our data structures above. Like any engineer
+that adheres to the values of testing, I also threw some tests in to cover the
+various scenarios for the RolloutStore. They are below.&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;no&quot;&gt;ROLLOUT&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;Rollout&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;new&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;RolloutPostgresStore&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;new&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;FeatureFlag&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;data&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;describe&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;RolloutPostgresStore&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;.new&amp;#39;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;it&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;assigns the model instance variable&amp;#39;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;store&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;RolloutPostgresStore&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;new&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;FeatureFlag&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;data&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;expect&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;store&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;instance_variable_get&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;:@model&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;to&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;be&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;FeatureFlag&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+
+  &lt;span class=&quot;n&quot;&gt;it&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;assigns the attribute instance variable&amp;#39;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;store&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;RolloutPostgresStore&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;new&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;FeatureFlag&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;data&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;expect&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;store&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;instance_variable_get&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;:@attribute&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;to&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;eql&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;data&amp;#39;&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;describe&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;RolloutPostgresStore&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;#get&amp;#39;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;it&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;returns nil for not having found a FeatureFlag with the given key&amp;#39;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;store&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;RolloutPostgresStore&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;new&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;FeatureFlag&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;data&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;expect&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;store&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;get&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&amp;#39;test_key&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;to&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;be&lt;/span&gt; &lt;span class=&quot;kp&quot;&gt;nil&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+
+  &lt;span class=&quot;n&quot;&gt;it&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;returns the value for a given key when a FeatureFlag is found&amp;#39;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt;
+    &lt;span class=&quot;no&quot;&gt;ROLLOUT&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;activate_percentage&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;:search&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;20&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+
+    &lt;span class=&quot;n&quot;&gt;store&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;RolloutPostgresStore&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;new&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;FeatureFlag&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;data&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;expect&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;store&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;get&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&amp;#39;feature:search&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;to&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;eql&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;20||&amp;#39;&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;describe&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;RolloutPostgresStore&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;#set&amp;#39;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;it&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;receives the create_feature_flag message for not having found a flag&amp;#39;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;expect_any_instance_of&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;RolloutPostgresStore&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;to&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;receive&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;:create_feature_flag&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;at_most&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;:once&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+
+    &lt;span class=&quot;no&quot;&gt;RolloutPostgresStore&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;new&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;FeatureFlag&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;data&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;set&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&amp;#39;search&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;20||&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+
+  &lt;span class=&quot;n&quot;&gt;it&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;receives the update_flag message for having found a flag&amp;#39;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt;
+    &lt;span class=&quot;no&quot;&gt;ROLLOUT&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;activate_percentage&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;:search&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;20&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+
+    &lt;span class=&quot;n&quot;&gt;expect_any_instance_of&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;RolloutPostgresStore&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;to&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;receive&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;:update_flag&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;at_most&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;:once&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+
+    &lt;span class=&quot;no&quot;&gt;RolloutPostgresStore&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;new&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;FeatureFlag&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;data&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;set&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&amp;#39;feature:search&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;20||123&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;describe&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;RolloutPostgresStore&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;#del&amp;#39;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;it&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;returns the object deleted for finding the key to delete&amp;#39;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt;
+    &lt;span class=&quot;no&quot;&gt;ROLLOUT&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;activate_percentage&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;:search&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;30&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+
+    &lt;span class=&quot;c1&quot;&gt;# There is only one feature flag per the activation above&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;feature_flag&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;FeatureFlag&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;first&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;store&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;RolloutPostgresStore&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;new&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;FeatureFlag&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;data&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;expect&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;store&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;del&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&amp;#39;feature:search&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;to&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;eq&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;feature_flag&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+
+  &lt;span class=&quot;n&quot;&gt;it&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;returns nil for not being able to find the key to delete&amp;#39;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;expect&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;RolloutPostgresStore&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;new&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;FeatureFlag&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;data&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;del&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&amp;#39;feature:test&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;to&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;be&lt;/span&gt; &lt;span class=&quot;kp&quot;&gt;nil&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;conclusion&quot;&gt;Conclusion&lt;/h2&gt;
+
+&lt;p&gt;We wanted to create something with as small a footprint as possible without
+having to add Redis to our stack for feature flagging. This little piece of
+software seems to fit exactly that. The code is available on
+&lt;a href=&quot;https://github.com/Americastestkitchen/rollout_postgres_store&quot;&gt;Github&lt;/a&gt; and
+&lt;a href=&quot;https://rubygems.org/gems/rollout_postgres_store&quot;&gt;RubyGems&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h2 id=&quot;discuss&quot;&gt;Discuss&lt;/h2&gt;
+&lt;p&gt;&lt;a href=&quot;https://news.ycombinator.com/item?id=9021266&quot;&gt;Discus on HN with us!&lt;/a&gt;&lt;/p&gt;
+
+</description>
+        <pubDate>Fri, 06 Feb 2015 18:15:00 -0500</pubDate>
+        <link>http://yourdomain.com/ruby/rollout/2015/02/06/postgres-store-for-rollout-gem/</link>
+        <guid isPermaLink="true">http://yourdomain.com/ruby/rollout/2015/02/06/postgres-store-for-rollout-gem/</guid>
+      </item>
+    
+      <item>
+        <title>CSS Best Practices</title>
+        <description>&lt;h2 id=&quot;a-css-spirit-quest&quot;&gt;A CSS spirit quest&lt;/h2&gt;
+
+&lt;p&gt;Our development team recently held an internal ‘mini-conference’, during which
+most of the developers got a chance to present on a topic of interest. The idea
+was to talk about something relevant to our professional development, but also
+something that we are really passionate about.&lt;/p&gt;
+
+&lt;p&gt;Probably as much to my surprise as everyone else’s, I’ve recently become very
+passionate about writing good quality CSS, and decided to give a talk on the
+subject. I’ve been writing a lot of CSS over the past few months, as part of
+some really cool front-end redesign projects our team has been working on. I
+found that the more I cared about following CSS best practices, and the
+stricter I tried to be with myself in following them, the easier (and more fun)
+the process became. I think all developers could benefit from treating CSS as a
+legitimate discipline worthy of serious study, and in doing so would probably
+find their disdain for it subsiding.&lt;/p&gt;
+
+&lt;p&gt;You can view my full presentation on why we should care about CSS best
+practices &lt;a href=&quot;http://slides.com/laurefischer/css-spirit-quest&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;
+</description>
+        <pubDate>Sun, 05 Oct 2014 14:15:00 -0400</pubDate>
+        <link>http://yourdomain.com/css/2014/10/05/css-debates/</link>
+        <guid isPermaLink="true">http://yourdomain.com/css/2014/10/05/css-debates/</guid>
+      </item>
+    
+      <item>
+        <title>Rails Asset Pipeline</title>
+        <description>&lt;h2 id=&quot;slight-asset-pipeline-overview&quot;&gt;Slight Asset Pipeline Overview&lt;/h2&gt;
+&lt;p&gt;The Rails Asset Pipeline can be slightly tricky to newcomers and those not in
+the rails world. It was brought into this world when version 3.1 launched and
+its main mission was to ease the developer pain on getting assets (images,
+scripts, stylesheets) production ready.&lt;/p&gt;
+
+&lt;p&gt;There are a lot of minor gotchas with the pipeline like:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Remembering to actually use the helper methods to get things properly fingerprinted&lt;/li&gt;
+  &lt;li&gt;Remembering to add custom named manifest files to config/application.rb&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;c1&quot;&gt;#config/application.rb&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;config&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;assets&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;precompile&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+=&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&amp;#39;new_manifest.js&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;new_manifest.css&amp;#39;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Remembering to include newly created javascripts and stylesheets to our manifests.&lt;/li&gt;
+  &lt;li&gt;And I am sure there is much more that I am forgetting.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;our-code-and-the-pipeline&quot;&gt;Our Code and The Pipeline&lt;/h2&gt;
+&lt;p&gt;Our codebase is a multi-tenant platform that services our top three sites:
+&lt;a href=&quot;http://www.cooksillustrated.com&quot;&gt;Cook’s Illustrated&lt;/a&gt;,
+&lt;a href=&quot;http://www.cookscountry.com&quot;&gt;Cook’s Country&lt;/a&gt;, and
+&lt;a href=&quot;http://www.americastestkitchen.com&quot;&gt;America’s Test Kitchen&lt;/a&gt;. We have approximately
+six-ish custom manifest files due to the multi-tenant nature of our platform. At
+times, we do tend to forget to use one of the many helpers that Rails comes with.&lt;/p&gt;
+
+&lt;h2 id=&quot;quick-presentation-for-knowledge-flow&quot;&gt;Quick Presentation For Knowledge Flow&lt;/h2&gt;
+&lt;p&gt;In lieu of this lack of remembering to use helpers, I decided to create a quick
+presentation (5-10minute talk in length) to go over the asset pipeline, less in
+depth than 
+&lt;a href=&quot;http://guides.rubyonrails.org/asset_pipeline.html&quot;&gt;Rails documentation&lt;/a&gt;. I used
+&lt;a href=&quot;https://github.com/jdan/cleaver&quot;&gt;cleaver&lt;/a&gt; to generate the presentation. Comments
+and questions are welcomed.&lt;/p&gt;
+</description>
+        <pubDate>Thu, 14 Aug 2014 19:15:00 -0400</pubDate>
+        <link>http://yourdomain.com/rails/asset_pipeline/2014/08/14/rails-asset-pipeline/</link>
+        <guid isPermaLink="true">http://yourdomain.com/rails/asset_pipeline/2014/08/14/rails-asset-pipeline/</guid>
+      </item>
+    
+  </channel>
+</rss>
