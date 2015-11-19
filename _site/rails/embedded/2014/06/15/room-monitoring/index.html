@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Door Monitoring</title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="description" content="TODO: Write this.">
+    <link rel="canonical" href="http://yourdomain.com/rails/embedded/2014/06/15/room-monitoring/">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/main.css">
+
+</head>
+
+
+    <body>
+
+    <header class="site-header">
+
+  <div class="wrap">
+
+    <a class="site-title" href="/">ATK Developer Blog</a>
+
+    <nav class="site-nav">
+      <a href="#" class="menu-icon">
+        <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+           viewBox="0 0 18 15" enable-background="new 0 0 18 15" xml:space="preserve">
+          <path fill="#505050" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0
+            h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
+          <path fill="#505050" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484
+            h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
+          <path fill="#505050" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0
+            c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
+        </svg>
+      </a>
+      <div class="trigger">
+        <!-- All pages with a title. -->
+        
+        
+          <a class="page-link" href="/about/">About</a>
+        
+        
+        
+          <a class="page-link" href="/feed.xml">RSS</a>
+        
+        
+        
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrap">
+      <div class="post">
+
+  <header class="post-header">
+    <h1>Door Monitoring
+      
+      <span class="github">
+        <a href="https://www.github.com/Americastestkitchen/metricution">Americastestkitchen/metricution</a>
+      </span>
+      
+    </h1>
+    <p class="meta">
+      Jun 15, 2014
+
+      
+      
+      • <a href="https://www.github.com/nixpulvis">Nathan Lilienthal</a>
+      
+      
+
+      
+    </p>
+  </header>
+
+  <article class="post-content">
+  <p>Going to the bathroom is something we all do on a daily basis. At ATK we have shared single person unisex bathrooms, which makes finding an open bathroom difficult at times. It’s by no means the largest problem that needs solving, but it was a problem that involved a hardware solution, thus capturing my personal interest.</p>
+
+<p><img src="/images/bathroom_status_view.png" alt="Office View" /></p>
+
+<p>This is the view from my work area, as you can see it’s very easy to tell when it’s safe to run to the bathroom now, thanks to our bathroom status monitor.</p>
+
+<p>To tackle this problem I opted for the following technologies.</p>
+
+<ul>
+  <li><a href="https://www.spark.io">Spark Core</a></li>
+  <li><a href="https://www.digitalocean.com">Digital Ocean</a></li>
+  <li><a href="http://rubyonrails.org">Rails 4</a></li>
+  <li><a href="http://emberjs.com">Ember</a></li>
+  <li><a href="http://www.w3.org/TR/eventsource/">Server Sent Events</a></li>
+</ul>
+
+<h2 id="the-concept">The Concept</h2>
+
+<p>Whenever someone uses a bathroom in our office they close the door (obviously), but more importantly, when they are finished they leave the door open. In the past the door being open has been a sort of signal for availability. This application leverages this preexisting protocol to implement a simple bathroom status monitor. The data is collected from the <a href="https://www.spark.io">Spark Core</a> equipped with a magnetic door sensor <a href="http://en.wikipedia.org/wiki/Reed_switch">Reed switch</a>. The door sensor can tell when the door is closed or open, that’s it. When the door is closed we say the bathroom is occupied, and when the door is opened we say the bathroom is available.</p>
+
+<h2 id="the-nitty-gritty">The Nitty Gritty</h2>
+
+<p>This project’s code is pretty simple, broken into two very discrete parts. The backend, and the frontend. Both live on <a href="https://github.com/Americastestkitchen/metricution">GitHub</a> and are there for your viewing pleasure.</p>
+
+<h3 id="the-spark-core">The Spark Core</h3>
+
+<p>The Spark Core is a very cool little device. It’s very small yet has an on-board WiFi module. This makes it perfect for inter-office status reporting. The WiFi in our building reaches pretty much 100% of the space, so it’s a simple way to send data to and from a server. This allows for the status hardware to communicate directly with the webserver. Solutions involving other forms of radio communication need a dedicated hardware for receiving messages and forwarding them to the webserver.</p>
+
+<p><img src="/images/bathroom_status_hardware.jpg" alt="The device" /></p>
+
+<p>The photo above is the current setup. As you can see it’s dead simple, just a <a href="https://www.spark.io">Spark Core</a> with a <a href="http://www.adafruit.com/product/375">Adafruit Magnetic Contact Switch (door sensor)</a> and an LED. We don’t even need resistors for the sensor because we are making use of the internal pull up capabilities of the core.</p>
+
+<p>Sending events with the Spark Core is simple, in fact the whole firmware for this project fits easily below. To understand it better refer to the <em>excellent</em> <a href="http://docs.spark.io">Spark Core documentation</a>.</p>
+
+<div class="highlight"><pre><code class="language-c--" data-lang="c++"><span class="c1">// State</span>
+<span class="c1">// 0 = Available</span>
+<span class="c1">// 1 = Occupied</span>
+<span class="kt">int</span> <span class="n">state</span><span class="p">;</span>
+<span class="kt">int</span> <span class="n">last_state</span> <span class="o">=</span> <span class="n">state</span><span class="p">;</span>
+
+<span class="kt">void</span> <span class="nf">setup</span><span class="p">()</span> <span class="p">{</span>
+  <span class="n">pinMode</span><span class="p">(</span><span class="n">D7</span><span class="p">,</span> <span class="n">OUTPUT</span><span class="p">);</span>
+  <span class="n">pinMode</span><span class="p">(</span><span class="n">D0</span><span class="p">,</span> <span class="n">INPUT_PULLDOWN</span><span class="p">);</span>
+
+  <span class="kt">char</span> <span class="o">*</span><span class="n">version</span> <span class="o">=</span> <span class="s">&quot;0.0.4&quot;</span><span class="p">;</span>
+  <span class="n">Spark</span><span class="p">.</span><span class="n">variable</span><span class="p">(</span><span class="s">&quot;version&quot;</span><span class="p">,</span> <span class="n">version</span><span class="p">,</span> <span class="n">STRING</span><span class="p">);</span>
+
+  <span class="kt">char</span> <span class="o">*</span><span class="n">ssid</span> <span class="o">=</span> <span class="n">Network</span><span class="p">.</span><span class="n">SSID</span><span class="p">();</span>
+  <span class="n">Spark</span><span class="p">.</span><span class="n">variable</span><span class="p">(</span><span class="s">&quot;ssid&quot;</span><span class="p">,</span> <span class="n">ssid</span><span class="p">,</span> <span class="n">STRING</span><span class="p">);</span>
+
+  <span class="n">state</span> <span class="o">=</span> <span class="n">digitalRead</span><span class="p">(</span><span class="n">D0</span><span class="p">);</span>
+  <span class="n">Spark</span><span class="p">.</span><span class="n">variable</span><span class="p">(</span><span class="s">&quot;state&quot;</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">state</span><span class="p">,</span> <span class="n">INT</span><span class="p">);</span>
+  <span class="n">Spark</span><span class="p">.</span><span class="n">publish</span><span class="p">(</span><span class="s">&quot;door&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">state</span> <span class="o">?</span> <span class="s">&quot;closed&quot;</span> <span class="o">:</span> <span class="s">&quot;opened&quot;</span><span class="p">),</span> <span class="mi">60</span><span class="p">,</span> <span class="n">PRIVATE</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kt">void</span> <span class="nf">loop</span><span class="p">()</span> <span class="p">{</span>
+  <span class="n">state</span> <span class="o">=</span> <span class="n">digitalRead</span><span class="p">(</span><span class="n">D0</span><span class="p">);</span>
+
+  <span class="k">if</span> <span class="p">(</span><span class="n">state</span> <span class="o">!=</span> <span class="n">last_state</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">digitalWrite</span><span class="p">(</span><span class="n">D7</span><span class="p">,</span> <span class="n">state</span><span class="p">);</span>
+    <span class="n">Spark</span><span class="p">.</span><span class="n">publish</span><span class="p">(</span><span class="s">&quot;door&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">state</span> <span class="o">?</span> <span class="s">&quot;closed&quot;</span> <span class="o">:</span> <span class="s">&quot;opened&quot;</span><span class="p">),</span> <span class="mi">60</span><span class="p">,</span> <span class="n">PRIVATE</span><span class="p">);</span>
+  <span class="p">}</span>
+
+  <span class="n">last_state</span> <span class="o">=</span> <span class="n">state</span><span class="p">;</span>
+<span class="p">}</span></code></pre></div>
+
+<p>Communication between all of the cores and our webserver happens over a single persistent HTTP connection, using Server Sent Events, thanks to the Spark Cloud. To leverage this I needed to write a very basic <a href="https://github.com/Americastestkitchen/metricution/blob/master/lib/metricution/sse.rb">SSE client</a> in Ruby.</p>
+
+<h3 id="getting-data-to-the-browser">Getting Data to The Browser</h3>
+
+<p>Getting the data to the client is the next trick, luckily we can do the same thing we did to get it to the server. Server sent events have a browser implementation called <code>EventSource</code> that allows us to register events in the browser. When a user connects to the server asking for the bathroom status they get an Ember app that sets up a EventSource connection to the server’s SSE bathroom API, and updates it’s internal representation of the bathrooms when the server sends an event. The code for this is <strong>very</strong> simple with Ember.</p>
+
+<div class="highlight"><pre><code class="language-coffeescript" data-lang="coffeescript"><span class="nv">source = </span><span class="k">new</span> <span class="nx">EventSource</span><span class="p">(</span><span class="s">&#39;/api/v1/events/bathrooms&#39;</span><span class="p">)</span>
+<span class="nx">source</span><span class="p">.</span><span class="nx">addEventListener</span> <span class="s">&#39;bathroom&#39;</span><span class="p">,</span> <span class="nf">(event) =&gt;</span>
+  <span class="nx">@get</span><span class="p">(</span><span class="s">&#39;store&#39;</span><span class="p">).</span><span class="nx">pushPayload</span><span class="p">(</span><span class="s">&#39;bathroom&#39;</span><span class="p">,</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">event</span><span class="p">.</span><span class="nx">data</span><span class="p">))</span></code></pre></div>
+
+<p>When the process monitoring the Spark Core’s events picks up a change in their status it updates the database and sends a Redis event. Doing this in Rails is easy.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">class</span> <span class="nc">Bathroom</span> <span class="o">&lt;</span> <span class="no">ActiveRecord</span><span class="o">::</span><span class="no">Base</span>
+
+  <span class="o">.</span><span class="n">.</span><span class="o">.</span>
+
+  <span class="n">after_save</span> <span class="k">do</span>
+    <span class="no">Metricution</span><span class="o">::</span><span class="no">Redis</span><span class="o">.</span><span class="n">publish</span><span class="p">(</span><span class="s1">&#39;bathroom&#39;</span><span class="p">,</span> <span class="no">Metricution</span><span class="o">::</span><span class="no">ActiveRecordSerializer</span><span class="o">.</span><span class="n">to_json</span><span class="p">(</span><span class="nb">self</span><span class="p">))</span>
+  <span class="k">end</span>
+<span class="k">end</span></code></pre></div>
+
+<p>Then the controller in Rails is relatively simple.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">bathrooms</span>
+    <span class="n">sse</span> <span class="o">=</span> <span class="no">Metricution</span><span class="o">::</span><span class="no">SSE</span><span class="o">::</span><span class="no">Writer</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">stream</span><span class="p">)</span>
+
+    <span class="c1"># TODO: Use one Redis connection. Creating a full</span>
+    <span class="c1"># Redis connection per request is pretty expensive.</span>
+    <span class="n">redis</span> <span class="o">=</span> <span class="no">Redis</span><span class="o">.</span><span class="n">new</span>
+    <span class="n">redis</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="s1">&#39;bathroom&#39;</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">on</span><span class="o">|</span>
+      <span class="n">on</span><span class="o">.</span><span class="n">message</span> <span class="k">do</span> <span class="o">|</span><span class="n">channel</span><span class="p">,</span> <span class="n">message</span><span class="o">|</span>
+        <span class="n">sse</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="ss">event</span><span class="p">:</span> <span class="s1">&#39;bathroom&#39;</span><span class="p">)</span>
+      <span class="k">end</span>
+    <span class="k">end</span>
+
+<span class="c1"># Rescue user closing connection.</span>
+<span class="k">rescue</span> <span class="no">IOError</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">into</span> <span class="s2">&quot;stream closed&quot;</span>
+
+<span class="c1"># Clean up the action.</span>
+<span class="k">ensure</span>
+    <span class="n">redis</span><span class="o">.</span><span class="n">quit</span>
+    <span class="n">sse</span><span class="o">.</span><span class="n">close</span>
+<span class="k">end</span></code></pre></div>
+
+<p>And just like that we have live updating data in Ember from a Spark Core.</p>
+
+<h3 id="the-frontend">The Frontend</h3>
+
+<p><img src="/images/bathroom_status_client.png" alt="The UI" /></p>
+
+<p>Simple, flat, and to the point. Backed by ember, it updates in realtime, and updates font sizes to take up as much space as it can. Keeping everything very large allows it to be useful when put up on screens for the whole office.</p>
+
+<hr />
+
+<p>All in all this project is relatively simple, but it’s saving time in failed trips to the bathroom. The next step involves complex analysis of historical bathroom visit data, to allow for statistical insight into bathroom habits. Oh, and a 💩 icon for when the bathroom has been occupied for more than 5 minutes.</p>
+
+  </article>
+
+</div>
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrap">
+
+    <div class="footer-col-1 column">
+      <ul>
+        <li>ATK Developer Blog</li>
+        <li>
+          <a href="https://github.com/Americastestkitchen">
+            <span class="icon github">
+              <svg version="1.1" class="github-icon-svg" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+                 viewBox="0 0 16 16" enable-background="new 0 0 16 16" xml:space="preserve">
+                <path fill-rule="evenodd" clip-rule="evenodd" fill="#C2C2C2" d="M7.999,0.431c-4.285,0-7.76,3.474-7.76,7.761
+                c0,3.428,2.223,6.337,5.307,7.363c0.388,0.071,0.53-0.168,0.53-0.374c0-0.184-0.007-0.672-0.01-1.32
+                c-2.159,0.469-2.614-1.04-2.614-1.04c-0.353-0.896-0.862-1.135-0.862-1.135c-0.705-0.481,0.053-0.472,0.053-0.472
+                c0.779,0.055,1.189,0.8,1.189,0.8c0.692,1.186,1.816,0.843,2.258,0.645c0.071-0.502,0.271-0.843,0.493-1.037
+                C4.86,11.425,3.049,10.76,3.049,7.786c0-0.847,0.302-1.54,0.799-2.082C3.768,5.507,3.501,4.718,3.924,3.65
+                c0,0,0.652-0.209,2.134,0.796C6.677,4.273,7.34,4.187,8,4.184c0.659,0.003,1.323,0.089,1.943,0.261
+                c1.482-1.004,2.132-0.796,2.132-0.796c0.423,1.068,0.157,1.857,0.077,2.054c0.497,0.542,0.798,1.235,0.798,2.082
+                c0,2.981-1.814,3.637-3.543,3.829c0.279,0.24,0.527,0.713,0.527,1.437c0,1.037-0.01,1.874-0.01,2.129
+                c0,0.208,0.14,0.449,0.534,0.373c3.081-1.028,5.302-3.935,5.302-7.362C15.76,3.906,12.285,0.431,7.999,0.431z"/>
+              </svg>
+            </span>
+            <span class="username">Americastestkitchen</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+
+    <div class="footer-col-2 column">
+      <ul>
+        <li>Our Sites</li>
+        <li><a href="http://www.americastestkitchen.com">America's Test Kitchen</a></li>
+        <li><a href="http://www.cooksillustrated.com">Cooks Illustrated</a></li>
+        <li><a href="http://www.cookscountry.com">Cooks Country</a></li>
+        <li><a href="http://www.onlinecookingschool.com">Online Cooking School</a></li>
+      </ul>
+    </div>
+
+    <div class="footer-col-3 column">
+      <ul>
+        <li>Open Source Projects</li>
+        <li><a href="https://github.com/Americastestkitchen/preflight">preflight</a></li>
+        <li><a href="https://github.com/Americastestkitchen/json_array_serializer">json_array_serializer</a></li>
+        <li><a href="https://github.com/Americastestkitchen/hostel">hostel</a></li>
+      </ul>
+    </div>
+
+  </div>
+
+</footer>
+
+
+    </body>
+</html>

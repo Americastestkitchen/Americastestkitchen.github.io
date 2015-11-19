@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>You Gotta Check Out This Enumerator, It'll Change Your Life I Swear!</title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="description" content="TODO: Write this.">
+    <link rel="canonical" href="http://yourdomain.com/enumerators/2015/09/15/useful-enumerators/">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/main.css">
+
+</head>
+
+
+    <body>
+
+    <header class="site-header">
+
+  <div class="wrap">
+
+    <a class="site-title" href="/">ATK Developer Blog</a>
+
+    <nav class="site-nav">
+      <a href="#" class="menu-icon">
+        <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+           viewBox="0 0 18 15" enable-background="new 0 0 18 15" xml:space="preserve">
+          <path fill="#505050" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0
+            h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
+          <path fill="#505050" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484
+            h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
+          <path fill="#505050" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0
+            c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
+        </svg>
+      </a>
+      <div class="trigger">
+        <!-- All pages with a title. -->
+        
+        
+          <a class="page-link" href="/about/">About</a>
+        
+        
+        
+          <a class="page-link" href="/feed.xml">RSS</a>
+        
+        
+        
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrap">
+      <div class="post">
+
+  <header class="post-header">
+    <h1>You Gotta Check Out This Enumerator, It'll Change Your Life I Swear!
+      
+    </h1>
+    <p class="meta">
+      Sep 15, 2015
+
+      
+      
+      • <a href="https://www.github.com/ccandelora">Chris Candelora</a>
+      
+      
+
+      
+    </p>
+  </header>
+
+  <article class="post-content">
+  <p>Well, not really but it has made my job easier and I think it could do the same for you.</p>
+
+<p>I’m relatively new to Ruby and in my past life my bread and butter language was PHP. When I was told that our stacks were going to be ripped down and replaced with Ruby on Rails I had mixed emotions. In one hand I was really excited to be working with Ruby on Rails. A new cool language to sink my teeth into. On the other hand I was going to be working with Ruby on Rails! I thought, OK maybe this wont be so bad. I can use what I know about PHP and apply it to Ruby on Rails.  So I hit the books and tutorials and anything I could get my hands on. I quickly learned that Ruby on Rails and Ruby had a lot of built in magic and PHP had none of that. It took me a long time to get my head around it. A colleague told me to just “believe in the magic”. Well, now I believe and I would like to share some of that “magic” with you.</p>
+
+<p>One of the events that really help me believe was a suggestion from another colleague. He told me about this blog called <a href="http://www.rubytapas.com/">“Ruby Tapas”</a> by <a href="http://devblog.avdi.org/">Avdi Grimm</a>. You have to check it out! I can’t say enough good things about it but maybe I’ll save that for another blog post. Everyday I would go through his posts while commuting to work. I would sit on the train with my headphones on staring at my phone and continually saying out loud “ah that’s cool!”. My fellow commuters started to sit a little further away from me each day.</p>
+
+<p>One of those “ah that’s cool!” moments came after I saw Avdi’s post about this strange enumerator called partition.</p>
+
+<h2 id="what-is-partition-and-what-does-it-do">What is partition and what does it do?</h2>
+
+<p>From <a href="http://apidock.com/ruby/Enumerable/partition">apidock</a></p>
+
+<p>“partition() public</p>
+
+<p>Returns two arrays, the first containing the elements of enum for which the block evaluates to true, the second containing the rest.”</p>
+
+<p>In simpler terms it splits a collection into two subsets based on some criteria.</p>
+
+<p>A few days later after stumbling on this gem I was tasked with building a tool for our Web Edit Team. This team will sometimes free up content on our sites and they needed a quick and easy way to find out which pieces of content are currently free. The bit of logic we have built into our code to determine if a piece of content is free doesn’t use a status attribute but instead uses start and end dates to determine if something is currently free. I thought this would be so much easier if we just had a status attribute and I could easily just query everything that had a status of active. I thought, I could make a schema change and add the new attribute and run a daily job to check and alter the status but that just seemed like crazy town. Then I thought about the Ruby “magic” and the post I saw a few days earlier about partition. Everything just fell into place. I didn’t need to make a crazy schema change it was just for a view after all. Partition was exactly what I needed.</p>
+
+<p>So I built a helper that would take an array of hashes and easily split the array into to two arrays. An active array and an inactive array.</p>
+
+<noscript><pre>400: Invalid request
+</pre></noscript>
+<script src="https://gist.github.com/b4c06cc1e60351658bc9.js"> </script>
+
+<p>The next part was even easier. I just needed to create a view that called the helper and returned the instance variables @active and @inactive. Once I checked for the presence of the instance variables all that was left to do was iterate over the arrays.</p>
+
+<noscript><pre>400: Invalid request
+</pre></noscript>
+<script src="https://gist.github.com/9c5cba7691834b525bef.js"> </script>
+
+<p>So the next time you find yourself needing to split a collection into two subsets based on some criteria just remember this story and the “magic” of partition.</p>
+
+  </article>
+
+</div>
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrap">
+
+    <div class="footer-col-1 column">
+      <ul>
+        <li>ATK Developer Blog</li>
+        <li>
+          <a href="https://github.com/Americastestkitchen">
+            <span class="icon github">
+              <svg version="1.1" class="github-icon-svg" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+                 viewBox="0 0 16 16" enable-background="new 0 0 16 16" xml:space="preserve">
+                <path fill-rule="evenodd" clip-rule="evenodd" fill="#C2C2C2" d="M7.999,0.431c-4.285,0-7.76,3.474-7.76,7.761
+                c0,3.428,2.223,6.337,5.307,7.363c0.388,0.071,0.53-0.168,0.53-0.374c0-0.184-0.007-0.672-0.01-1.32
+                c-2.159,0.469-2.614-1.04-2.614-1.04c-0.353-0.896-0.862-1.135-0.862-1.135c-0.705-0.481,0.053-0.472,0.053-0.472
+                c0.779,0.055,1.189,0.8,1.189,0.8c0.692,1.186,1.816,0.843,2.258,0.645c0.071-0.502,0.271-0.843,0.493-1.037
+                C4.86,11.425,3.049,10.76,3.049,7.786c0-0.847,0.302-1.54,0.799-2.082C3.768,5.507,3.501,4.718,3.924,3.65
+                c0,0,0.652-0.209,2.134,0.796C6.677,4.273,7.34,4.187,8,4.184c0.659,0.003,1.323,0.089,1.943,0.261
+                c1.482-1.004,2.132-0.796,2.132-0.796c0.423,1.068,0.157,1.857,0.077,2.054c0.497,0.542,0.798,1.235,0.798,2.082
+                c0,2.981-1.814,3.637-3.543,3.829c0.279,0.24,0.527,0.713,0.527,1.437c0,1.037-0.01,1.874-0.01,2.129
+                c0,0.208,0.14,0.449,0.534,0.373c3.081-1.028,5.302-3.935,5.302-7.362C15.76,3.906,12.285,0.431,7.999,0.431z"/>
+              </svg>
+            </span>
+            <span class="username">Americastestkitchen</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+
+    <div class="footer-col-2 column">
+      <ul>
+        <li>Our Sites</li>
+        <li><a href="http://www.americastestkitchen.com">America's Test Kitchen</a></li>
+        <li><a href="http://www.cooksillustrated.com">Cooks Illustrated</a></li>
+        <li><a href="http://www.cookscountry.com">Cooks Country</a></li>
+        <li><a href="http://www.onlinecookingschool.com">Online Cooking School</a></li>
+      </ul>
+    </div>
+
+    <div class="footer-col-3 column">
+      <ul>
+        <li>Open Source Projects</li>
+        <li><a href="https://github.com/Americastestkitchen/preflight">preflight</a></li>
+        <li><a href="https://github.com/Americastestkitchen/json_array_serializer">json_array_serializer</a></li>
+        <li><a href="https://github.com/Americastestkitchen/hostel">hostel</a></li>
+      </ul>
+    </div>
+
+  </div>
+
+</footer>
+
+
+    </body>
+</html>

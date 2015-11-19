@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>The Value of Postmortems</title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="description" content="TODO: Write this.">
+    <link rel="canonical" href="http://yourdomain.com/culture/engineering/2015/05/13/the-value-of-postmortems/">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/main.css">
+
+</head>
+
+
+    <body>
+
+    <header class="site-header">
+
+  <div class="wrap">
+
+    <a class="site-title" href="/">ATK Developer Blog</a>
+
+    <nav class="site-nav">
+      <a href="#" class="menu-icon">
+        <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+           viewBox="0 0 18 15" enable-background="new 0 0 18 15" xml:space="preserve">
+          <path fill="#505050" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0
+            h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
+          <path fill="#505050" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484
+            h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
+          <path fill="#505050" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0
+            c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
+        </svg>
+      </a>
+      <div class="trigger">
+        <!-- All pages with a title. -->
+        
+        
+          <a class="page-link" href="/about/">About</a>
+        
+        
+        
+          <a class="page-link" href="/feed.xml">RSS</a>
+        
+        
+        
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrap">
+      <div class="post">
+
+  <header class="post-header">
+    <h1>The Value of Postmortems
+      
+    </h1>
+    <p class="meta">
+      May 13, 2015
+
+      
+      
+      • <a href="https://www.github.com/phereford">Patrick Hereford</a>
+      
+      
+
+      
+    </p>
+  </header>
+
+  <article class="post-content">
+  <p>It’s 2am and your phone wakes you. Servers down. Sleepily, you muster the energy
+to get out of bed and start troubleshooting system issues and resolve them after
+two hours. You are able to go back to sleep for that extra beauty rest
+before going into work. Of course the moment you are in the office, everyone
+wants to know of your heroic deeds, from the steps needed to resolve the issue
+to the actual issue at hand. You painstakingly recount the root issue and the
+attempt to discuss the exact steps taken to solve it. Everyone is intently
+listening to your story when all of a sudden, you forget the order of operations
+needed to resolve the issue.</p>
+
+<p>Whether or not you forget the replication steps to solve the issue, this 
+rather familiar scenario is where a postmortem can help your team. A postmortem
+would immediately disseminate the necessary information (asynchronously)
+reducing the need for this somewhat awkward group discussion. In addition,
+the engineer should be receiving <a href="http://media.giphy.com/media/Cp9cUJc4hgNvG/giphy.gif">the highest of fives</a>
+for getting the business back online <em>AND</em> appropriately documenting every
+step of the process.</p>
+
+<hr />
+
+<h2 id="shifting-to-a-blameless-culture">Shifting to a Blameless Culture</h2>
+<p>When considering postmortems for your company, one has to be mindful of
+maintaing a culture of being completely <a href="https://codeascraft.com/2012/05/22/blameless-postmortems/">blameless</a>.
+This <em>has to exist</em> for postmortems to have any value to an organization.
+The main point of postmortems is to disseminate information and educate team 
+members on specific issues that bring down systems. We want to break up those
+important system wide knowledge silos in as positive a fashion as we can.</p>
+
+<p>Let’s say Greg had been working rather late one evening to ship a feature. He had
+accidentally left out the all important <code>:</code> in our <code>clock.rb</code> file, causing all
+of our scheduled jobs to fail. This failure actually went undetected for an
+extra day or two as our error provider never picked up any errors (our clock
+process would not boot up).</p>
+
+<p>More often than not, Greg will more than likely already feel terrible for being
+the root contributor to the issue at hand. Adding a layer of blame to that is
+just not needed or warranted and may have negative effects on his professional
+development.</p>
+
+<p>For the sake of our postmortem, it also does not matter one bit that Greg was at 
+fault for this issue. What matters is that the symptoms of the issue are 
+correctly documented, the solution is well documented, and there are regression
+tests for this scenario (when applicable).</p>
+
+<h2 id="tools-we-use">Tools We Use</h2>
+<p>We really enjoy using <a href="https://github.com/discourse/discourse">discourse</a> for
+documenting everything that relates to our development processes, including
+our postmortems. Not only does it enable a team of 
+developers to document all the things using the tools we know and love
+(i.e. Markdown), but the threaded forum format <em>encourages continued discussion</em> 
+of the issues involved. The search quality is pretty good, too.</p>
+
+<h2 id="overcoming-hurdles">Overcoming Hurdles</h2>
+<p>4am isn’t the easiest time to write eloquent prose. As engineers, we need to be in 
+the habit of taking notes and snapshots as we go (repeatable trace of commands,
+analysis of logs, etc), being mindful of the need to compile a postmortem afterwards.
+Writing a postmortem well after the events have
+transpired with little documentation can lead to incorrect diagnosis and
+misremembering the various analyses performed to determine the root cause of the
+issue.  It’s paramount that the postmortem be written no later than 48 hours after the
+downtime. Analysis and command history get lost quickly, especially in the heat
+of the moment.</p>
+
+<p>Any organization that is technical in nature should implement some form of 
+documentation about downtime and critical issues. The thoughtful curation and 
+creation of these long lived documents will help any organization in the long
+term through knowledge dissemination.</p>
+
+<hr />
+
+<p><a href="https://news.ycombinator.com/item?id=9538509">Discuss on HN</a></p>
+
+  </article>
+
+</div>
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrap">
+
+    <div class="footer-col-1 column">
+      <ul>
+        <li>ATK Developer Blog</li>
+        <li>
+          <a href="https://github.com/Americastestkitchen">
+            <span class="icon github">
+              <svg version="1.1" class="github-icon-svg" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+                 viewBox="0 0 16 16" enable-background="new 0 0 16 16" xml:space="preserve">
+                <path fill-rule="evenodd" clip-rule="evenodd" fill="#C2C2C2" d="M7.999,0.431c-4.285,0-7.76,3.474-7.76,7.761
+                c0,3.428,2.223,6.337,5.307,7.363c0.388,0.071,0.53-0.168,0.53-0.374c0-0.184-0.007-0.672-0.01-1.32
+                c-2.159,0.469-2.614-1.04-2.614-1.04c-0.353-0.896-0.862-1.135-0.862-1.135c-0.705-0.481,0.053-0.472,0.053-0.472
+                c0.779,0.055,1.189,0.8,1.189,0.8c0.692,1.186,1.816,0.843,2.258,0.645c0.071-0.502,0.271-0.843,0.493-1.037
+                C4.86,11.425,3.049,10.76,3.049,7.786c0-0.847,0.302-1.54,0.799-2.082C3.768,5.507,3.501,4.718,3.924,3.65
+                c0,0,0.652-0.209,2.134,0.796C6.677,4.273,7.34,4.187,8,4.184c0.659,0.003,1.323,0.089,1.943,0.261
+                c1.482-1.004,2.132-0.796,2.132-0.796c0.423,1.068,0.157,1.857,0.077,2.054c0.497,0.542,0.798,1.235,0.798,2.082
+                c0,2.981-1.814,3.637-3.543,3.829c0.279,0.24,0.527,0.713,0.527,1.437c0,1.037-0.01,1.874-0.01,2.129
+                c0,0.208,0.14,0.449,0.534,0.373c3.081-1.028,5.302-3.935,5.302-7.362C15.76,3.906,12.285,0.431,7.999,0.431z"/>
+              </svg>
+            </span>
+            <span class="username">Americastestkitchen</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+
+    <div class="footer-col-2 column">
+      <ul>
+        <li>Our Sites</li>
+        <li><a href="http://www.americastestkitchen.com">America's Test Kitchen</a></li>
+        <li><a href="http://www.cooksillustrated.com">Cooks Illustrated</a></li>
+        <li><a href="http://www.cookscountry.com">Cooks Country</a></li>
+        <li><a href="http://www.onlinecookingschool.com">Online Cooking School</a></li>
+      </ul>
+    </div>
+
+    <div class="footer-col-3 column">
+      <ul>
+        <li>Open Source Projects</li>
+        <li><a href="https://github.com/Americastestkitchen/preflight">preflight</a></li>
+        <li><a href="https://github.com/Americastestkitchen/json_array_serializer">json_array_serializer</a></li>
+        <li><a href="https://github.com/Americastestkitchen/hostel">hostel</a></li>
+      </ul>
+    </div>
+
+  </div>
+
+</footer>
+
+
+    </body>
+</html>
