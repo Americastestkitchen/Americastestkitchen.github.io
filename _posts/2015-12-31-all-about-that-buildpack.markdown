@@ -1,5 +1,3 @@
-/Users/npupillo/atk/Americastestkitchen.github.io/_posts/2015-12-31-all-about-that-buildpack.markdown
-
 ---
 layout: post
 title:  "All about that Buildpack"
