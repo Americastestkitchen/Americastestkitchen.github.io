@@ -6,6 +6,7 @@ This is the America's Test Kitchen Developer Blog. We'll post about things we're
 
 ```sh
 gem install jekyll
+gem install jekyll-gist
 rbenv rehash  # If you're using rbenv (you should be)
 git clone https://github.com/Americastestkitchen/Americastestkitchen.github.io
 ```

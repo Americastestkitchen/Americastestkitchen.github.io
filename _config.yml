@@ -12,5 +12,7 @@ permalink: pretty
 # analytics
 analytics:
   provider: google
-  google: 
+  google:
     tracking_id: 'UA-52337213-1'
+
+gems: [jekyll-gist]
