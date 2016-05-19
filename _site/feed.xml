@@ -7,8 +7,258 @@
     <atom:link href="http://yourdomain.com/feed.xml" rel="self" type="application/rss+xml" />
     
       <item>
+        <title>Building a Recommendation Engine with Collaborative Filtering</title>
+        <description>&lt;p&gt;&lt;em&gt;At America’s Test Kitchen, our engineering team
+spends two days every quarter participating in Professional Development Days -
+a hackathon-esque opportunity for each of us to build something cool and learn new things. My recipe recommender proof-of-concept was
+a product of our last professional development cycle.&lt;/em&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;the-challenge&quot;&gt;The Challenge&lt;/h2&gt;
+
+&lt;p&gt;Our recipe pages currently list manually curated links to related content
+(see the ‘More From Cooks Illustrated’ section at the &lt;a href=&quot;http://www.cooksillustrated.com/recipes/8125-chocolate-crinkle-cookies&quot;&gt;bottom of this page&lt;/a&gt;).
+This usually includes articles on equipment or ingredients needed to make the
+recipe, or suggested accompaniments and variations that were listed with the
+recipe in the magazine.&lt;br /&gt;
+My goal was to supplement the manually curated related content with a feature
+similar to the “Users who bought this item also bought these items” section
+on Amazon’s product pages.
+In theory, this would keep readers more engaged by giving them
+an easy way to browse to new recipes without having to navigate back to a home
+page or searching for a new term.&lt;/p&gt;
+
+&lt;h2 id=&quot;the-solution&quot;&gt;The Solution&lt;/h2&gt;
+
+&lt;p&gt;I started by researching the techniques used by existing recommendation
+engines. I found that many of them used a machine learning concept called
+collaborative filtering, which involves leveraging user’s likes or dislikes to
+measure the similarity of elements in a dataset. The assumption this technique
+makes is that items which are ‘liked’ by a similar set of users are similar
+themselves. An example of a collaborative filtering is Facebook’s
+“People you may know” feature, which generates predictions under the assumption
+that people with a similar set of friends are likely to know each other.&lt;/p&gt;
+
+&lt;p&gt;Collaborative filtering was the perfect technique to build the recommendation
+engine. We already had a huge dataset of User Favorites - a feature that allows
+users to save recipes they cooked or plan to cook for later viewing. I realized
+I would be able to use this data to compare the sets of users who favorited each pair of recipes and determine their similarity. Each recipe page would recommend the recipes with the greatest similarity.&lt;/p&gt;
+
+&lt;h2 id=&quot;the-algorithm&quot;&gt;The Algorithm&lt;/h2&gt;
+
+&lt;p&gt;In order to implement the collaborative filtering technique, I needed an
+algorithm to determine the similarity of sets. I found a statistic called the
+Jaccard Coefficient that scores the similarity of two sets by dividing the
+cardinality (length) of their intersection set by the cardinality of their union
+set.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/jaccard.png&quot; alt=&quot;Jaccard Coefficient&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;I used the Jaccard Coefficient to build a matrix of similarity set scores. For each permutation of recipe pairs, the similarity of each recipe’s set of “favoriters” was calculated.&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;no&quot;&gt;Recipe&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;each&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;|&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;x_recipe&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;|&lt;/span&gt;
+  &lt;span class=&quot;no&quot;&gt;Recipe&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;each&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;|&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;y_recipe&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;|&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;similarity_matrix&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;x_recipe&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;][&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;y_recipe&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;jaccard_coefficient&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;
+      &lt;span class=&quot;n&quot;&gt;x_recipe&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+      &lt;span class=&quot;n&quot;&gt;y_recipe&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;# cardinality of intersection / cardinality of union&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;jaccard_coefficient&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;left&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;right&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;left&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;favoriters&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;right&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;favoriters&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;).&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;length&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;left&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;favoriters&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;right&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;favoriters&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;).&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;length&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;Once the matrix was built, recommendations for a given recipe could be generated by looking up the recipes which had the highest similarity in the given recipe’s row.&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;generate_recommendations&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;recipe&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;number_of_recommendations&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;similarity_matrix&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;recipe&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;].&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;max_by&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;number_of_recommendations&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;|&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;key&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;value&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;|&lt;/span&gt;   
+    &lt;span class=&quot;n&quot;&gt;value&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;h2 id=&quot;adding-some-context&quot;&gt;Adding some context&lt;/h2&gt;
+&lt;p&gt;Collaborative filtering alone wasn’t enough. With user favorites as the only
+metric for determining recipe similarity, I found that the recommendations I was
+generating weren’t very helpful. For example, when viewing the Chocolate Crinkle
+Cookies recipe, you might see a recommendation for Chicken Noodle Soup because
+many of the same users just happened to have favorited both recipes. The
+recommendation engine was really just showing content that was popular, and to a
+user, it would just look like we were displaying random recipes on the page.&lt;/p&gt;
+
+&lt;p&gt;To add some context to the recommendations, I applied the Jaccard Index
+technique to data from our recipe tagging system.  Recipes were scored for
+tag similarity across 3 different categories: Dish Type, Main Ingredients, and
+Recipe Type. I then combined the similarity scores from these 3 new datasets
+with the user favorites similarity data using a 6 point system:&lt;/p&gt;
+
+&lt;table&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th&gt;Similarity Set Metric&lt;/th&gt;
+      &lt;th&gt; &lt;/th&gt;
+      &lt;th&gt; &lt;/th&gt;
+      &lt;th&gt; &lt;/th&gt;
+      &lt;th&gt;Examples&lt;/th&gt;
+      &lt;th&gt; &lt;/th&gt;
+      &lt;th&gt; &lt;/th&gt;
+      &lt;th&gt; &lt;/th&gt;
+      &lt;th&gt;Points Possible&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td&gt;Favoriters&lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt;Users 1, 5, 7, 9&lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt;3&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;Dish Type&lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt;Salads, Breakfast, Breads&lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;Main Ingredient&lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt;Chocolate, Beef, Vegetables&lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;Recipe Type&lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt;Vegetarian, Quick and Easy, Grilling and Barbecue&lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;p&gt;By bringing in those new datasets, the recommendation engine was able to make
+suggestions of recipes that were both relevant and popular.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/recommendations.png&quot; alt=&quot;Final product&quot; /&gt;&lt;/p&gt;
+</description>
+        <pubDate>Sun, 15 May 2016 04:00:42 -0400</pubDate>
+        <link>http://yourdomain.com/professional-development/2016/05/15/collaborative-filtering/</link>
+        <guid isPermaLink="true">http://yourdomain.com/professional-development/2016/05/15/collaborative-filtering/</guid>
+      </item>
+    
+      <item>
+        <title>All about that Buildpack</title>
+        <description>&lt;p&gt;While upgrading our legacy production Wordpress blog app “The Feed” from Heroku stack Cedar-10 to Cedar-14, I had the opportunity to work with Heroku buildpacks.&lt;/p&gt;
+
+&lt;h2 id=&quot;whats-a-buildpack&quot;&gt;What’s a buildpack?&lt;/h2&gt;
+&lt;p&gt;Buildpacks are a tool for modifying how a Heroku app is built &amp;amp; deployed. For Heroku to support many languages &amp;amp; tools it tries to be an agnostic platform with no native support for any one language. Buildpacks can be managed as an independent GitHub repo. They behave like an adapter for customizing an app’s build process - in so far that a language can even be completely contained inside a buildpack if needed. In my scenario I used buildpacks to add operating system level dependencies that were missing from a new Ubuntu OS of the underlying Heroku app.&lt;/p&gt;
+
+&lt;h2 id=&quot;whats-in-a-buildpack&quot;&gt;What’s in a buildpack?&lt;/h2&gt;
+&lt;p&gt;At a minimum in the root folder of the buildpack repo, a buildpack contains a bin directory with three Bash scripts: detect, compile, release:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;em&gt;bin/detect&lt;/em&gt; - used to check if a specific file exists in order to continue or else will exit.
+–Example, from Apache+PHP buildpack for Wordpress &lt;a href=&quot;https://github.com/Americastestkitchen/heroku-wordpress-php&quot;&gt;https://github.com/Americastestkitchen/heroku-wordpress-php&lt;/a&gt;: here we check for the existence of an index.php file &amp;amp; output a happy or sad message visible during the Heroku build, for example:&lt;/p&gt;
+
+    &lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;&lt;span class=&quot;c&quot;&gt;#!/usr/bin/env bash&lt;/span&gt;&lt;/code&gt;&lt;br /&gt;
+  &lt;code class=&quot;highlighter-rouge&quot;&gt;if [ -f $1/index.php ]; then&lt;/code&gt;&lt;br /&gt;
+    &lt;code class=&quot;highlighter-rouge&quot;&gt;echo &quot;index.php ATK heroku-wordpress-php&quot; &amp;amp;&amp;amp; exit 0&lt;/code&gt;&lt;br /&gt;
+  &lt;code class=&quot;highlighter-rouge&quot;&gt;else&lt;/code&gt;&lt;br /&gt;
+    &lt;code class=&quot;highlighter-rouge&quot;&gt;echo &quot;index.php not detected&quot; &amp;amp;&amp;amp; exit 1&lt;/code&gt;&lt;br /&gt;
+  &lt;code class=&quot;highlighter-rouge&quot;&gt;fi&lt;/code&gt;&lt;br /&gt;&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;&lt;em&gt;bin/compile&lt;/em&gt; - the bulk of the work that modifies the heroku slug (more about slugs here: &lt;a href=&quot;https://devcenter.heroku.com/articles/slug-compiler&quot;&gt;https://devcenter.heroku.com/articles/slug-compiler&lt;/a&gt;. For example: compile specifies where binaries are installed, Heroku config files are written, dependencies are resolved &amp;amp; installed, &amp;amp; static files are built.&lt;/li&gt;
+  &lt;li&gt;&lt;em&gt;bin/release&lt;/em&gt; - modifies the heroku release (more about releases here: &lt;a href=&quot;https://devcenter.heroku.com/articles/releases&quot;&gt;https://devcenter.heroku.com/articles/releases&lt;/a&gt;)&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;the-challenge&quot;&gt;The Challenge&lt;/h2&gt;
+&lt;p&gt;I created these additional buildpacks to assist the existing heroku-wordpress-php buildpack &amp;amp; the new heroku-buildpack-apt buildpack because Heroku’s Cedar-14 stack was missing some OS level dependencies, specifically libjpeg62 &amp;amp; libssl0.9.8. Heroku confirmed my issue in their documentation that certain Ubuntu packages were now missing from the new Cedar-14 stack (see &lt;a href=&quot;https://devcenter.heroku.com/articles/cedar-ubuntu-packages&quot;&gt;Ubuntu Packages on Cedar and Cedar-14&lt;/a&gt;).&lt;/p&gt;
+
+&lt;p&gt;In my scenario, the existing state of the app included two GitHub repos:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;The Feed - our private Wordpress blog repo&lt;/li&gt;
+  &lt;li&gt;Apache+PHP buildpack for Wordpress &lt;a href=&quot;https://github.com/Americastestkitchen/heroku-wordpress-php&quot;&gt;https://github.com/Americastestkitchen/heroku-wordpress-php&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;And by the end, the app included these additional repos:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;ATK heroku-buildpack-apt &lt;a href=&quot;https://github.com/Americastestkitchen/heroku-buildpack-apt&quot;&gt;https://github.com/Americastestkitchen/heroku-buildpack-apt&lt;/a&gt; -forked from &lt;a href=&quot;https://github.com/ddollar/heroku-buildpack-apt&quot;&gt;ddollar/heroku-buildpack-apt&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;ATK heroku-buildpack-multi &lt;a href=&quot;https://github.com/Americastestkitchen/heroku-buildpack-multi&quot;&gt;https://github.com/Americastestkitchen/heroku-buildpack-multi&lt;/a&gt; -forked from &lt;a href=&quot;https://github.com/heroku/heroku-buildpack-multi&quot;&gt;heroku/heroku-buildpack-multi&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;the-solution&quot;&gt;The Solution&lt;/h2&gt;
+&lt;p&gt;For my solution I set &lt;em&gt;heroku-buildpack-multi&lt;/em&gt; as the primary buildpack of The Feed repo, then &lt;em&gt;heroku-buildpack-multi&lt;/em&gt; loads the two other buildpacks in the order specified in the .buildpacks file of The Feed repo.&lt;br /&gt;
+.buildpacks file: &lt;br /&gt;
+&lt;code class=&quot;highlighter-rouge&quot;&gt;heroku-buildpack-apt&lt;/code&gt;&lt;br /&gt;
+&lt;code class=&quot;highlighter-rouge&quot;&gt;heroku-wordpress-php&lt;/code&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;em&gt;heroku-buildpack-apt&lt;/em&gt; - This buildpack installs the missing Ubuntu system dependencies when Heroku is building the app. These dependencies are specified on separate lines in the &lt;em&gt;Aptfile&lt;/em&gt; file of The Feed repo. &lt;br /&gt;
+Aptfile: &lt;br /&gt;
+&lt;code class=&quot;highlighter-rouge&quot;&gt;libjpeg62&lt;/code&gt;&lt;br /&gt;
+&lt;code class=&quot;highlighter-rouge&quot;&gt;libssl0.9.8&lt;/code&gt;&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;em&gt;heroku-wordpress-php&lt;/em&gt; - This is the existing buildpack which installs a specific version of Apache &amp;amp; PHP for our specific version of Wordpress.&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;keep-in-mind&quot;&gt;Keep in mind&lt;/h2&gt;
+&lt;p&gt;–Since making changes to a buildpack affects the Heroku build process itself, testing any changes require re-deploying the app to Heroku. Use a non production test app for developing and testing your theories.&lt;/p&gt;
+
+&lt;p&gt;–You can set an app’s primary buildpack in the CLI vs Heroku UI. Setting the buildpack in the Heroku app’s Settings in the &lt;a href=&quot;http://dashboard.heroku.com&quot;&gt;Heroku Dashboard&lt;/a&gt; (under Reveal Config Vars) will set the buildpack as the default. However if a buildpack is set in the CLI it will take precedence over the one in the Heroku Dashboard but unfortunately will NOT visually change it in the Heroku Dashboard. Therefore I set the primary buildpack to heroku-buildpack-multi in both the Heroku Settings UI &amp;amp; the CLI to ensure consistency and avoid any confusion.&lt;/p&gt;
+
+&lt;h2 id=&quot;helpful-cli-commands&quot;&gt;Helpful CLI commands&lt;/h2&gt;
+
+&lt;p&gt;–Clear the buildpacks&lt;br /&gt;
+&lt;code class=&quot;highlighter-rouge&quot;&gt;heroku buildpacks:clear -a your-app-name&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;–Set a buildpack&lt;br /&gt;
+&lt;code class=&quot;highlighter-rouge&quot;&gt;heroku buildpacks:set https://github.com/heroku/heroku-buildpack-multi.git -a your-app-name&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;–Display a full list of options for the buildpacks command&lt;br /&gt;
+&lt;code class=&quot;highlighter-rouge&quot;&gt;heroku help buildpacks&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;–Double check which buildpacks are set via the CLI with the heroku buildpacks command&lt;br /&gt;
+&lt;code class=&quot;highlighter-rouge&quot;&gt;heroku buildpacks -a your-app-name&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;–List an app’s Heroku release history - useful if you need to roll back to a previous release&lt;br /&gt;
+‘heroku releases -a your-app-name’&lt;/p&gt;
+
+&lt;h2 id=&quot;other-uses&quot;&gt;Other uses&lt;/h2&gt;
+&lt;p&gt;Another possible use of buildpacks I stumbled upon was to include command utilities for troubleshooting which are not included automatically in the Heroku build. So for example if you wanted to troubleshoot an app’s network activity, you could have a buildpack install &lt;em&gt;traceroute&lt;/em&gt; during the build process so it can be used in the app’s Heroku bash console.&lt;/p&gt;
+</description>
+        <pubDate>Thu, 31 Dec 2015 18:59:59 -0500</pubDate>
+        <link>http://yourdomain.com/buildpack/2015/12/31/all-about-that-buildpack/</link>
+        <guid isPermaLink="true">http://yourdomain.com/buildpack/2015/12/31/all-about-that-buildpack/</guid>
+      </item>
+    
+      <item>
         <title>Getting It Done In A Flash</title>
-        <description>&lt;p&gt;Recently while working on a new project I stumbled across a neat little trick. The gist of the project was to create a landing page for our marketing group that they could use to direct customers to from a number of paid adverting programs. The landing page just included a form where we would collect some customer information and once it was submitted we would bring them to our homepage. Simple enough.&lt;/p&gt;
+        <description>&lt;p&gt;Recently while working on a new project I stumbled across a neat little trick. The gist of the project was to create a landing page for our marketing group that they could use to direct customers to from a number of paid advertising programs. The landing page just included a form where we would collect some customer information and once it was submitted we would bring them to our homepage. Simple enough.&lt;/p&gt;
 
 &lt;p&gt;Then came the tricky part. Because we were using paid advertising programs to direct customers to the landing page we needed a layer of metrics to determine if the campaigns were performing and how many customer we were converting. All of the advertising programs had their own set of tracking pixels and methods. Normally this would be easy because you could just include what ever code the tracking pixel required on a confirmation page. But this project didn’t have a confirmation page. The next page after submitting the form took the customer straight to our homepage. It didn’t make sense to include the tracking pixel code on our homepage. It seemed very inefficient to load these pixels every time the homepage loaded. Plus if a customer did come through the landing page, got to the homepage and starting using the site and natural hit the homepage several times the tracking pixels would fire and cause the conversion metrics to be inflated and inaccurate.&lt;/p&gt;
 
@@ -28,9 +278,9 @@
 
 &lt;p&gt;This little trick has opened my eyes to the power of the flash. I’m definitely going to be looking for more ways to use it on future projects.&lt;/p&gt;
 </description>
-        <pubDate>Wed, 18 Nov 2015 18:15:00 -0500</pubDate>
-        <link>http://yourdomain.com/flash/2015/11/18/in-a-flash/</link>
-        <guid isPermaLink="true">http://yourdomain.com/flash/2015/11/18/in-a-flash/</guid>
+        <pubDate>Thu, 19 Nov 2015 18:15:00 -0500</pubDate>
+        <link>http://yourdomain.com/flash/2015/11/19/in-a-flash/</link>
+        <guid isPermaLink="true">http://yourdomain.com/flash/2015/11/19/in-a-flash/</guid>
       </item>
     
       <item>
@@ -133,7 +383,7 @@ productivity while creating unstructured content.&lt;/em&gt;&lt;/p&gt;
 
 &lt;h2 id=&quot;problem-scoping&quot;&gt;Problem Scoping&lt;/h2&gt;
 &lt;p&gt;&lt;em&gt;Background&lt;/em&gt;: At America’s Test Kitchen, we are working on a new content type
-(internally called an &lt;code&gt;Article&lt;/code&gt;) that is more complicated than our current
+(internally called an &lt;code class=&quot;highlighter-rouge&quot;&gt;Article&lt;/code&gt;) that is more complicated than our current
 content offerings. Instead of having highly structured data, we are designing
 this to be free flowing (think &lt;em&gt;one wysiwyg to rule them all&lt;/em&gt;).&lt;/p&gt;
 
@@ -154,7 +404,7 @@ text and creating necessary associations between our content (there are very
 minimal text fields that allow for custom HTML). This general work flow gives us
 consistency on our front-end for our users but really doesn’t allow WebEdit to
 create custom content from a layout perspective. Look at the two pdfs 
-below as examples of &lt;code&gt;Article&lt;/code&gt; content:&lt;/p&gt;
+below as examples of &lt;code class=&quot;highlighter-rouge&quot;&gt;Article&lt;/code&gt; content:&lt;/p&gt;
 
 &lt;p&gt;&lt;a href=&quot;/pdfs/Article_Brownies.pdf&quot;&gt;Chewy Brownies&lt;/a&gt;&lt;br /&gt;
 &lt;a href=&quot;/pdfs/Article_BakedAlaska.pdf&quot;&gt;Baked Alaska&lt;/a&gt;&lt;/p&gt;
@@ -171,8 +421,8 @@ upcoming Article content.&lt;/p&gt;
 
 &lt;h2 id=&quot;minimum-viable-product&quot;&gt;Minimum Viable Product&lt;/h2&gt;
 &lt;p&gt;Our prototype is going to be a proof of concept. Technologies used:
-&lt;code&gt;JSXTransformer&lt;/code&gt;, &lt;code&gt;iframe&lt;/code&gt;, &lt;code&gt;jQuery&lt;/code&gt;, &lt;code&gt;React&lt;/code&gt;. In our current CMS (created with
-bootstrap), we are going to have a preview button that brings said &lt;code&gt;iframe&lt;/code&gt; into
+&lt;code class=&quot;highlighter-rouge&quot;&gt;JSXTransformer&lt;/code&gt;, &lt;code class=&quot;highlighter-rouge&quot;&gt;iframe&lt;/code&gt;, &lt;code class=&quot;highlighter-rouge&quot;&gt;jQuery&lt;/code&gt;, &lt;code class=&quot;highlighter-rouge&quot;&gt;React&lt;/code&gt;. In our current CMS (created with
+bootstrap), we are going to have a preview button that brings said &lt;code class=&quot;highlighter-rouge&quot;&gt;iframe&lt;/code&gt; into
 view with the click of a button. As someone changes the one html field, it will
 re-render the iframe and reload the entire page with the new data (similar
 to CodePen.io).&lt;/p&gt;
@@ -181,13 +431,13 @@ to CodePen.io).&lt;/p&gt;
 
 &lt;p&gt;Holy smokes Batman! Well, we are off to a great start. You can see that as we 
 type, we have a request firing off to reload the page with the new value. The
-&lt;code&gt;ArticlePreviewContainer&lt;/code&gt; then transpiles the JSX and evaluates it.&lt;/p&gt;
+&lt;code class=&quot;highlighter-rouge&quot;&gt;ArticlePreviewContainer&lt;/code&gt; then transpiles the JSX and evaluates it.&lt;/p&gt;
 
 &lt;p&gt;The original thinking behind this was to make it similar to CodePen using some
 &lt;a href=&quot;https://gist.github.com/ncerminara/11257943&quot;&gt;Base64 shenanigans gist&lt;/a&gt; and created
-both a Rails route and React route both looking like: &lt;code&gt;/admin/article/:id/:base&lt;/code&gt;.
-Using the gist above, we are encoding the value of the body input into &lt;code&gt;Base64&lt;/code&gt;
-and passing it to the routes for the &lt;code&gt;:base&lt;/code&gt; parameter.  We even having it 
+both a Rails route and React route both looking like: &lt;code class=&quot;highlighter-rouge&quot;&gt;/admin/article/:id/:base&lt;/code&gt;.
+Using the gist above, we are encoding the value of the body input into &lt;code class=&quot;highlighter-rouge&quot;&gt;Base64&lt;/code&gt;
+and passing it to the routes for the &lt;code class=&quot;highlighter-rouge&quot;&gt;:base&lt;/code&gt; parameter.  We even having it 
 working with one of our custom React components! Hot Sauce! Here is what our 
 React Preview Component looks like:&lt;/p&gt;
 
@@ -197,7 +447,7 @@ React Preview Component looks like:&lt;/p&gt;
 
 &lt;p&gt;You might ask yourself, “What’s up with that RecipeIndexPage require at the top?”
 Currently, it is the only custom component I am allowing to be rendered in the
-&lt;code&gt;ArticlePreviewContainer&lt;/code&gt; React component. Requiring it was the only way I
+&lt;code class=&quot;highlighter-rouge&quot;&gt;ArticlePreviewContainer&lt;/code&gt; React component. Requiring it was the only way I
 thought to show WebEdit what it looks like when using custom components.&lt;/p&gt;
 
 &lt;p&gt;Speaking of WebEdit, it’s time to meet with them to get their thoughts on this.&lt;/p&gt;
@@ -212,8 +462,8 @@ put it in it’s own window?&lt;br /&gt;
 &lt;p&gt;&lt;em&gt;(Some notes I took down when dogfooding it to the engineering team…)&lt;/em&gt;&lt;br /&gt;
 - Iframe? Wat? Why aren’t you using postMessage?&lt;br /&gt;
 - We should definitely whitelist things that they have access too using 
-&lt;code&gt;React.Children.map&lt;/code&gt; for this content.&lt;br /&gt;
-- &lt;code&gt;JSXTransformer&lt;/code&gt; is being deprecated. Use Babel and pass over the transpiledJS&lt;/p&gt;
+&lt;code class=&quot;highlighter-rouge&quot;&gt;React.Children.map&lt;/code&gt; for this content.&lt;br /&gt;
+- &lt;code class=&quot;highlighter-rouge&quot;&gt;JSXTransformer&lt;/code&gt; is being deprecated. Use Babel and pass over the transpiledJS&lt;/p&gt;
 
 &lt;p&gt;Whoa. All great, great ideas. Definitely going to incorporate this feedback into
 my MVP.&lt;/p&gt;
@@ -227,7 +477,7 @@ my MVP.&lt;/p&gt;
 &lt;a href=&quot;http://underscorejs.org/&quot;&gt;Underscore&lt;/a&gt;,
 &lt;a href=&quot;https://developer.mozilla.org/en-US/docs/Web/API/Window/postMessage&quot;&gt;postMessage&lt;/a&gt;.&lt;/p&gt;
 
-&lt;p&gt;Technologies being removed: &lt;code&gt;iframe&lt;/code&gt;, &lt;code&gt;JSXTransformer&lt;/code&gt;, &lt;code&gt;Base64 gist&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;Technologies being removed: &lt;code class=&quot;highlighter-rouge&quot;&gt;iframe&lt;/code&gt;, &lt;code class=&quot;highlighter-rouge&quot;&gt;JSXTransformer&lt;/code&gt;, &lt;code class=&quot;highlighter-rouge&quot;&gt;Base64 gist&lt;/code&gt;&lt;/p&gt;
 
 &lt;p&gt;The only real code to care about here is:&lt;/p&gt;
 &lt;noscript&gt;&lt;pre&gt;400: Invalid request
@@ -240,7 +490,7 @@ following functions:&lt;br /&gt;
 1) Lints the JSX.&lt;br /&gt;
 2a) On failure, disable all submit buttons and display an error message.&lt;br /&gt;
 2b On success, enable all submit buttons and transform the JSX using 
-babel (and wrap it in an &lt;code&gt;Article&lt;/code&gt; react component for…reasons).&lt;br /&gt;
+babel (and wrap it in an &lt;code class=&quot;highlighter-rouge&quot;&gt;Article&lt;/code&gt; react component for…reasons).&lt;br /&gt;
 3) After transformation, it checks for our previewWindow and posts the message
 to the previewWindow.&lt;/p&gt;
 
@@ -277,7 +527,7 @@ postMessage event to more inputs.&lt;/p&gt;
 
 &lt;p&gt;White listing didn’t prove very difficult either. We created a mixin that would
 traverse the component’s children and return null if it was 
-not in the list (hence why we wrapped the resultant JSX in &lt;code&gt;&amp;lt;Article&amp;gt;&lt;/code&gt; tags).
+not in the list (hence why we wrapped the resultant JSX in &lt;code class=&quot;highlighter-rouge&quot;&gt;&amp;lt;Article&amp;gt;&lt;/code&gt; tags).
 Currently, it only supports white listing of HTML elements that React supports.
 We will be modifying the conditional logic to also check for a white list of 
 custom components in the very near future.&lt;/p&gt;
@@ -320,7 +570,7 @@ real-time tool to build really amazing content.&lt;/p&gt;
 
 &lt;p&gt;As it turns out, developing a first draft of the style guide was the easy part. There are lots of great examples out there (I give credit to &lt;a href=&quot;https://medium.com/@fat/mediums-css-is-actually-pretty-fucking-good-b8e2a6c78b06&quot;&gt;this post&lt;/a&gt; for being my personal inspiration for this whole endeavor), and after writing CSS for a certain amount of time, a lot of the pain points become clear, so it didn’t take long for us to come up with a list of rules that we wanted to follow.&lt;/p&gt;
 
-&lt;p&gt;For a little more context, the redesigned pages were built using React, and we are essentially maintaining a React app within our Rails app in order to segregate these new pages from our legacy views. Since all of our new React code and the associated styles were housed in their own &lt;code&gt;/react&lt;/code&gt; directory, we were able to use the structure of our React components to drive the organization of our new stylesheets, without having to worry about reorganizing our legacy stylesheets. With the new pages being fully responsive, we got to use some pretty nice gems (&lt;code&gt;susy&lt;/code&gt; for our grid layout, &lt;code&gt;breakpoint&lt;/code&gt; for clean media queries), and we also were able to use our different breakpoints to inform stylesheet structure.&lt;/p&gt;
+&lt;p&gt;For a little more context, the redesigned pages were built using React, and we are essentially maintaining a React app within our Rails app in order to segregate these new pages from our legacy views. Since all of our new React code and the associated styles were housed in their own &lt;code class=&quot;highlighter-rouge&quot;&gt;/react&lt;/code&gt; directory, we were able to use the structure of our React components to drive the organization of our new stylesheets, without having to worry about reorganizing our legacy stylesheets. With the new pages being fully responsive, we got to use some pretty nice gems (&lt;code class=&quot;highlighter-rouge&quot;&gt;susy&lt;/code&gt; for our grid layout, &lt;code class=&quot;highlighter-rouge&quot;&gt;breakpoint&lt;/code&gt; for clean media queries), and we also were able to use our different breakpoints to inform stylesheet structure.&lt;/p&gt;
 
 &lt;p&gt;With that, I give you our style guide (a working draft, I’ll call it).&lt;/p&gt;
 
@@ -328,13 +578,13 @@ real-time tool to build really amazing content.&lt;/p&gt;
 
 &lt;h2 id=&quot;file-structure&quot;&gt;File Structure&lt;/h2&gt;
 &lt;ul&gt;
-  &lt;li&gt;&lt;code&gt;main.scss&lt;/code&gt; imports all of our partials and mixins, which are organized into logical blocks with comments.&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;main.scss&lt;/code&gt; imports all of our partials and mixins, which are organized into logical blocks with comments.&lt;/li&gt;
   &lt;li&gt;Folders:
     &lt;ul&gt;
-      &lt;li&gt;Feature folder with subfolders for breakpoints (e.g. &lt;code&gt;search/desktop&lt;/code&gt; &lt;code&gt;search/mobile&lt;/code&gt; &lt;code&gt;search/tablet&lt;/code&gt;)&lt;/li&gt;
+      &lt;li&gt;Feature folder with subfolders for breakpoints (e.g. &lt;code class=&quot;highlighter-rouge&quot;&gt;search/desktop&lt;/code&gt; &lt;code class=&quot;highlighter-rouge&quot;&gt;search/mobile&lt;/code&gt; &lt;code class=&quot;highlighter-rouge&quot;&gt;search/tablet&lt;/code&gt;)&lt;/li&gt;
       &lt;li&gt;Mixins folder (includes any polyfills)&lt;/li&gt;
-      &lt;li&gt;Layouts folder (e.g. for a &lt;code&gt;_grid.scss&lt;/code&gt; file)&lt;/li&gt;
-      &lt;li&gt;Vendors folder (e.g. for a &lt;code&gt;_normalize.scss&lt;/code&gt; file)&lt;/li&gt;
+      &lt;li&gt;Layouts folder (e.g. for a &lt;code class=&quot;highlighter-rouge&quot;&gt;_grid.scss&lt;/code&gt; file)&lt;/li&gt;
+      &lt;li&gt;Vendors folder (e.g. for a &lt;code class=&quot;highlighter-rouge&quot;&gt;_normalize.scss&lt;/code&gt; file)&lt;/li&gt;
     &lt;/ul&gt;
   &lt;/li&gt;
 &lt;/ul&gt;
@@ -343,13 +593,13 @@ real-time tool to build really amazing content.&lt;/p&gt;
 
 &lt;h3 id=&quot;naming&quot;&gt;Naming&lt;/h3&gt;
 &lt;ul&gt;
-  &lt;li&gt;Prepend ids and classes being bound by JavaScript with &lt;code&gt;js-&lt;/code&gt;.&lt;/li&gt;
-  &lt;li&gt;Prepend ids and classes being bound by React with &lt;code&gt;react-&lt;/code&gt;.&lt;/li&gt;
-  &lt;li&gt;Prepend state-based css classes with &lt;code&gt;is-&lt;/code&gt;.&lt;/li&gt;
-  &lt;li&gt;Prepend newly created mixins with &lt;code&gt;m-&lt;/code&gt;.&lt;/li&gt;
+  &lt;li&gt;Prepend ids and classes being bound by JavaScript with &lt;code class=&quot;highlighter-rouge&quot;&gt;js-&lt;/code&gt;.&lt;/li&gt;
+  &lt;li&gt;Prepend ids and classes being bound by React with &lt;code class=&quot;highlighter-rouge&quot;&gt;react-&lt;/code&gt;.&lt;/li&gt;
+  &lt;li&gt;Prepend state-based css classes with &lt;code class=&quot;highlighter-rouge&quot;&gt;is-&lt;/code&gt;.&lt;/li&gt;
+  &lt;li&gt;Prepend newly created mixins with &lt;code class=&quot;highlighter-rouge&quot;&gt;m-&lt;/code&gt;.&lt;/li&gt;
   &lt;li&gt;Use BEM (block, element, modifier) naming conventions for classes whenever possible.
     &lt;ul&gt;
-      &lt;li&gt;E.g.: &lt;code&gt;gallery__image--large&lt;/code&gt;&lt;/li&gt;
+      &lt;li&gt;E.g.: &lt;code class=&quot;highlighter-rouge&quot;&gt;gallery__image--large&lt;/code&gt;&lt;/li&gt;
     &lt;/ul&gt;
   &lt;/li&gt;
 &lt;/ul&gt;
@@ -364,14 +614,14 @@ real-time tool to build really amazing content.&lt;/p&gt;
   &lt;li&gt;Use the minimum number of selectors you need to target an element for styling.&lt;/li&gt;
   &lt;li&gt;To avoid adding complexity, try to avoid nesting selectors when possible.
     &lt;ul&gt;
-      &lt;li&gt;A good exception to this rule would be the use of pseudo selectors in the vein of &lt;code&gt;nth-child&lt;/code&gt; and &lt;code&gt;nth-of-type&lt;/code&gt;.&lt;/li&gt;
+      &lt;li&gt;A good exception to this rule would be the use of pseudo selectors in the vein of &lt;code class=&quot;highlighter-rouge&quot;&gt;nth-child&lt;/code&gt; and &lt;code class=&quot;highlighter-rouge&quot;&gt;nth-of-type&lt;/code&gt;.&lt;/li&gt;
     &lt;/ul&gt;
   &lt;/li&gt;
 &lt;/ul&gt;
 
 &lt;h3 id=&quot;variables&quot;&gt;Variables&lt;/h3&gt;
 &lt;ul&gt;
-  &lt;li&gt;Make use of our &lt;code&gt;z-index&lt;/code&gt; scale file (which borrows heavily from &lt;a href=&quot;https://medium.com/@fat/mediums-css-is-actually-pretty-fucking-good-b8e2a6c78b06&quot;&gt;Medium’s &lt;code&gt;z-index&lt;/code&gt; scale&lt;/a&gt;. Here’s what it looks like:&lt;/li&gt;
+  &lt;li&gt;Make use of our &lt;code class=&quot;highlighter-rouge&quot;&gt;z-index&lt;/code&gt; scale file (which borrows heavily from &lt;a href=&quot;https://medium.com/@fat/mediums-css-is-actually-pretty-fucking-good-b8e2a6c78b06&quot;&gt;Medium’s &lt;code class=&quot;highlighter-rouge&quot;&gt;z-index&lt;/code&gt; scale&lt;/a&gt;. Here’s what it looks like:&lt;/li&gt;
 &lt;/ul&gt;
 &lt;noscript&gt;&lt;pre&gt;400: Invalid request
 &lt;/pre&gt;&lt;/noscript&gt;
@@ -387,9 +637,9 @@ real-time tool to build really amazing content.&lt;/p&gt;
   &lt;li&gt;Comma separated selectors should each be declared on a new line.&lt;/li&gt;
   &lt;li&gt;Include exactly one line break after each selector block.&lt;/li&gt;
   &lt;li&gt;Use single quotes for URLs.&lt;/li&gt;
-  &lt;li&gt;Use the font shorthand when possible (&lt;code&gt;font: 14px $proximanova $black&lt;/code&gt;).&lt;/li&gt;
-  &lt;li&gt;&lt;code&gt;@include&lt;/code&gt;s (for breakpoints) should be declared at the top of a given breakpoint-specific stylesheet, and should wrap all breakpoint-specific styles.&lt;/li&gt;
-  &lt;li&gt;Always use &lt;code&gt;rgb&lt;/code&gt; and &lt;code&gt;rgba&lt;/code&gt; for colors, to avoid mixing hex codes and &lt;code&gt;rgba&lt;/code&gt; for instances where transparency is needed.&lt;/li&gt;
+  &lt;li&gt;Use the font shorthand when possible (&lt;code class=&quot;highlighter-rouge&quot;&gt;font: 14px $proximanova $black&lt;/code&gt;).&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;@include&lt;/code&gt;s (for breakpoints) should be declared at the top of a given breakpoint-specific stylesheet, and should wrap all breakpoint-specific styles.&lt;/li&gt;
+  &lt;li&gt;Always use &lt;code class=&quot;highlighter-rouge&quot;&gt;rgb&lt;/code&gt; and &lt;code class=&quot;highlighter-rouge&quot;&gt;rgba&lt;/code&gt; for colors, to avoid mixing hex codes and &lt;code class=&quot;highlighter-rouge&quot;&gt;rgba&lt;/code&gt; for instances where transparency is needed.&lt;/li&gt;
 &lt;/ul&gt;
 
 &lt;h3 id=&quot;grid&quot;&gt;Grid&lt;/h3&gt;
@@ -400,7 +650,7 @@ real-time tool to build really amazing content.&lt;/p&gt;
 
 &lt;h3 id=&quot;breakpoints&quot;&gt;Breakpoints&lt;/h3&gt;
 &lt;ul&gt;
-  &lt;li&gt;Place breakpoint declarations inside a new file and folder &lt;code&gt;BREAKPOINT_NAME/component_name&lt;/code&gt;, per the file structure above (e.g. &lt;code&gt;tablet/_load_more_button.scss&lt;/code&gt;).&lt;/li&gt;
+  &lt;li&gt;Place breakpoint declarations inside a new file and folder &lt;code class=&quot;highlighter-rouge&quot;&gt;BREAKPOINT_NAME/component_name&lt;/code&gt;, per the file structure above (e.g. &lt;code class=&quot;highlighter-rouge&quot;&gt;tablet/_load_more_button.scss&lt;/code&gt;).&lt;/li&gt;
   &lt;li&gt;As much as possible, avoid duplication of shared styles across different breakpoints.&lt;/li&gt;
 &lt;/ul&gt;
 
@@ -416,11 +666,11 @@ real-time tool to build really amazing content.&lt;/p&gt;
 
 &lt;h3 id=&quot;make-peace-with-your-legacy-styles&quot;&gt;Make peace with your legacy styles&lt;/h3&gt;
 
-&lt;p&gt;Despite my idealistic visions of creating perfect, beautiful CSS without the weighty baggage of our legacy styles dragging us down, the reality of the situation was a little different. Even though we were building new pages, we were going to be slowly rolling them out to users, while still maintaining many of the existing pages (and thus stylesheets) for quite some time. Our CSS could still be beautiful, but we needed a strategy to combat legacy style conflicts. Our approach for this has evolved over time, from commenting any lines of code that were written to handle legacy style issues, to temporarily scoping new styles under top-level id selectors (and hating ourselves for it), to creating a &lt;code&gt;resets&lt;/code&gt; directory to house only styles that were needed to reconcile conflicts between old and new styles. None of these strategies have been ideal, but the main point here is that, even when I thought we had found the perfect time to implement a CSS style guide, with minimal refactoring of legacy code required, it still had (and continues to have) its challenges. So if you’re waiting for that perfect time to implement your own style guide, the good news is you don’t have to wait anymore! Right now is probably as good a time as any to start.&lt;/p&gt;
+&lt;p&gt;Despite my idealistic visions of creating perfect, beautiful CSS without the weighty baggage of our legacy styles dragging us down, the reality of the situation was a little different. Even though we were building new pages, we were going to be slowly rolling them out to users, while still maintaining many of the existing pages (and thus stylesheets) for quite some time. Our CSS could still be beautiful, but we needed a strategy to combat legacy style conflicts. Our approach for this has evolved over time, from commenting any lines of code that were written to handle legacy style issues, to temporarily scoping new styles under top-level id selectors (and hating ourselves for it), to creating a &lt;code class=&quot;highlighter-rouge&quot;&gt;resets&lt;/code&gt; directory to house only styles that were needed to reconcile conflicts between old and new styles. None of these strategies have been ideal, but the main point here is that, even when I thought we had found the perfect time to implement a CSS style guide, with minimal refactoring of legacy code required, it still had (and continues to have) its challenges. So if you’re waiting for that perfect time to implement your own style guide, the good news is you don’t have to wait anymore! Right now is probably as good a time as any to start.&lt;/p&gt;
 
 &lt;h3 id=&quot;keep-iterating&quot;&gt;Keep iterating&lt;/h3&gt;
 
-&lt;p&gt;My final takeaway from this process is the importance of regularly reevaluating the utility of a style guide’s rules. After all, such a guide is meant to make our lives as programmers easier, in addition to improving our code quality. As we started using our guide, we thought of things we needed to add (a &lt;code&gt;vendors&lt;/code&gt; directory), exceptions we needed to make (when nesting is okay) and rules we needed to clarify (why are we using this font scale thing again?). Even as I write this, I’m thinking I should ask the team again if they have more ideas for updates. So as much as rules are made to be followed (that’s the saying, right?), since they are going to be internal rules for our team, I think there is always room to revisit and iterate. And in the process, I think we’ve made our stylesheets more readable, more logical, and quite a bit more bearable to work with.&lt;/p&gt;
+&lt;p&gt;My final takeaway from this process is the importance of regularly reevaluating the utility of a style guide’s rules. After all, such a guide is meant to make our lives as programmers easier, in addition to improving our code quality. As we started using our guide, we thought of things we needed to add (a &lt;code class=&quot;highlighter-rouge&quot;&gt;vendors&lt;/code&gt; directory), exceptions we needed to make (when nesting is okay) and rules we needed to clarify (why are we using this font scale thing again?). Even as I write this, I’m thinking I should ask the team again if they have more ideas for updates. So as much as rules are made to be followed (that’s the saying, right?), since they are going to be internal rules for our team, I think there is always room to revisit and iterate. And in the process, I think we’ve made our stylesheets more readable, more logical, and quite a bit more bearable to work with.&lt;/p&gt;
 
 </description>
         <pubDate>Mon, 29 Jun 2015 16:00:00 -0400</pubDate>
@@ -554,7 +804,7 @@ members on specific issues that bring down systems. We want to break up those
 important system wide knowledge silos in as positive a fashion as we can.&lt;/p&gt;
 
 &lt;p&gt;Let’s say Greg had been working rather late one evening to ship a feature. He had
-accidentally left out the all important &lt;code&gt;:&lt;/code&gt; in our &lt;code&gt;clock.rb&lt;/code&gt; file, causing all
+accidentally left out the all important &lt;code class=&quot;highlighter-rouge&quot;&gt;:&lt;/code&gt; in our &lt;code class=&quot;highlighter-rouge&quot;&gt;clock.rb&lt;/code&gt; file, causing all
 of our scheduled jobs to fail. This failure actually went undetected for an
 extra day or two as our error provider never picked up any errors (our clock
 process would not boot up).&lt;/p&gt;
@@ -610,7 +860,7 @@ While we do love Redis immensely, we felt now was not quite the time to add yet
 another piece of infrastructure to our application. Thankfully, a semi-recent
 update for Rollout removed the Redis dependency and allows the end user to use
 any key-value store. The only requirements are that an instance of the store
-needs to respond to the &lt;code&gt;get&lt;/code&gt;, &lt;code&gt;set&lt;/code&gt;, and &lt;code&gt;del&lt;/code&gt; methods.&lt;/p&gt;
+needs to respond to the &lt;code class=&quot;highlighter-rouge&quot;&gt;get&lt;/code&gt;, &lt;code class=&quot;highlighter-rouge&quot;&gt;set&lt;/code&gt;, and &lt;code class=&quot;highlighter-rouge&quot;&gt;del&lt;/code&gt; methods.&lt;/p&gt;
 
 &lt;h2 id=&quot;the-decision&quot;&gt;The Decision&lt;/h2&gt;
 
@@ -619,18 +869,18 @@ we decided to create a wrapper for &lt;a href=&quot;http://www.postgresql.org/do
 We created a new ActiveRecord model called FeatureFlag that has a singular
 attribute (migration and model below).&lt;/p&gt;
 
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;CreateFeatureFlags&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;ActiveRecord&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;Migration&lt;/span&gt;
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;CreateFeatureFlags&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;ActiveRecord&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;Migration&lt;/span&gt;
   &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;change&lt;/span&gt;
     &lt;span class=&quot;n&quot;&gt;create_table&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:feature_flags&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;|&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;t&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;|&lt;/span&gt;
-      &lt;span class=&quot;n&quot;&gt;t&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;hstore&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:data&lt;/span&gt;
+      &lt;span class=&quot;n&quot;&gt;t&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;hstore&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:data&lt;/span&gt;
     &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
   
-    &lt;span class=&quot;n&quot;&gt;execute&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;CREATE INDEX feature_flags_data ON feature_flags USING GIN(data)&amp;#39;&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;execute&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&#39;CREATE INDEX feature_flags_data ON feature_flags USING GIN(data)&#39;&lt;/span&gt;
   &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
 &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
 
 &lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;FeatureFlag&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;ActiveRecord&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;Base&lt;/span&gt;
-&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
 &lt;p&gt;So far, so good. We didn’t necessarily need an empty AR model and could have
 simply written some SQL statements inside of some PG connections, but most of 
@@ -639,30 +889,30 @@ our business logic resides in AR.&lt;/p&gt;
 &lt;h2 id=&quot;implementing-the-store&quot;&gt;Implementing the Store&lt;/h2&gt;
 
 &lt;p&gt;Now for the fun part! As stated above, an instance of our store needs to be able
-to handle the &lt;code&gt;get&lt;/code&gt;, &lt;code&gt;set&lt;/code&gt;, and &lt;code&gt;del&lt;/code&gt; methods appropriately. Just from perusing the 
+to handle the &lt;code class=&quot;highlighter-rouge&quot;&gt;get&lt;/code&gt;, &lt;code class=&quot;highlighter-rouge&quot;&gt;set&lt;/code&gt;, and &lt;code class=&quot;highlighter-rouge&quot;&gt;del&lt;/code&gt; methods appropriately. Just from perusing the 
 rollout codebase, the methods are defined as the following:
-- &lt;code&gt;get&lt;/code&gt; takes a key argument and returns the value for the key
-- &lt;code&gt;set&lt;/code&gt; takes two arguments (key, value) and creates or updates the key-value pair
-- &lt;code&gt;del&lt;/code&gt; takes a key argument and deletes the key-value pair&lt;/p&gt;
+- &lt;code class=&quot;highlighter-rouge&quot;&gt;get&lt;/code&gt; takes a key argument and returns the value for the key
+- &lt;code class=&quot;highlighter-rouge&quot;&gt;set&lt;/code&gt; takes two arguments (key, value) and creates or updates the key-value pair
+- &lt;code class=&quot;highlighter-rouge&quot;&gt;del&lt;/code&gt; takes a key argument and deletes the key-value pair&lt;/p&gt;
 
 &lt;p&gt;Below is the code that handles these scenarios.&lt;/p&gt;
 
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;RolloutPostgresStore&lt;/span&gt;
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;RolloutPostgresStore&lt;/span&gt;
   &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;initialize&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;model&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;attribute&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
     &lt;span class=&quot;vi&quot;&gt;@model&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;model&lt;/span&gt;
     &lt;span class=&quot;vi&quot;&gt;@attribute&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;attribute&lt;/span&gt;
   &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
 
   &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;get&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;key&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;flag&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;vi&quot;&gt;@model&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;where&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;#{&lt;/span&gt;&lt;span class=&quot;vi&quot;&gt;@attribute&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt; ? &amp;#39;&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;#{&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;key&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;#39;&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;first&lt;/span&gt;
-      &lt;span class=&quot;n&quot;&gt;flag&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;send&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;vi&quot;&gt;@attribute&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;key&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;flag&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;vi&quot;&gt;@model&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;where&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;#{&lt;/span&gt;&lt;span class=&quot;vi&quot;&gt;@attribute&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt; ? &#39;&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;#{&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;key&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&#39;&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;).&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;first&lt;/span&gt;
+      &lt;span class=&quot;n&quot;&gt;flag&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;send&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;vi&quot;&gt;@attribute&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;key&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
     &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
   &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
 
   &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;set&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;key&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;value&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
     &lt;span class=&quot;n&quot;&gt;current&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;get&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;key&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
 
-    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;current&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;nil?&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;current&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;nil?&lt;/span&gt;
       &lt;span class=&quot;n&quot;&gt;create_feature_flag&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;key&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;value&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
     &lt;span class=&quot;k&quot;&gt;else&lt;/span&gt;
       &lt;span class=&quot;n&quot;&gt;update_flag&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;key&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;value&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
@@ -670,89 +920,89 @@ rollout codebase, the methods are defined as the following:
   &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
 
   &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;del&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;key&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;flag&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;vi&quot;&gt;@model&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;where&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;#{&lt;/span&gt;&lt;span class=&quot;vi&quot;&gt;@attribute&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt; ? &amp;#39;&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;#{&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;key&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;#39;&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;first&lt;/span&gt;
-      &lt;span class=&quot;n&quot;&gt;flag&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;delete&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;flag&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;vi&quot;&gt;@model&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;where&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;#{&lt;/span&gt;&lt;span class=&quot;vi&quot;&gt;@attribute&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt; ? &#39;&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;#{&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;key&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&#39;&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;).&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;first&lt;/span&gt;
+      &lt;span class=&quot;n&quot;&gt;flag&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;delete&lt;/span&gt;
     &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
   &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
 
   &lt;span class=&quot;kp&quot;&gt;private&lt;/span&gt;
   &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;create_feature_flag&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;key&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;value&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;flag&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;vi&quot;&gt;@model&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;new&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;flag&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;send&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;#{&lt;/span&gt;&lt;span class=&quot;vi&quot;&gt;@attribute&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;=&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;key&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;value&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;})&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;flag&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;save&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;flag&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;vi&quot;&gt;@model&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;new&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;flag&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;send&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;#{&lt;/span&gt;&lt;span class=&quot;vi&quot;&gt;@attribute&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;=&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;key&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;value&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;})&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;flag&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;save&lt;/span&gt;
   &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
 
   &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;update_flag&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;key&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;value&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;flag&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;vi&quot;&gt;@model&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;where&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;#{&lt;/span&gt;&lt;span class=&quot;vi&quot;&gt;@attribute&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt; ? &amp;#39;&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;#{&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;key&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;#39;&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;first&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;flag&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;send&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;vi&quot;&gt;@attribute&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;key&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;value&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;flag&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;send&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;#{&lt;/span&gt;&lt;span class=&quot;vi&quot;&gt;@attribute&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;_will_change!&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;flag&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;save&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;flag&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;vi&quot;&gt;@model&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;where&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;#{&lt;/span&gt;&lt;span class=&quot;vi&quot;&gt;@attribute&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt; ? &#39;&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;#{&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;key&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&#39;&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;).&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;first&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;flag&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;send&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;vi&quot;&gt;@attribute&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;key&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;value&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;flag&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;send&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;#{&lt;/span&gt;&lt;span class=&quot;vi&quot;&gt;@attribute&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;_will_change!&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;flag&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;save&lt;/span&gt;
   &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
-&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
 &lt;p&gt;It is relatively straightforward. We really utilize ActiveRecord a ton here but
 I think it’s an okay decision given our data structures above. Like any engineer
 that adheres to the values of testing, I also threw some tests in to cover the
 various scenarios for the RolloutStore. They are below.&lt;/p&gt;
 
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;no&quot;&gt;ROLLOUT&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;Rollout&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;new&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;RolloutPostgresStore&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;new&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;FeatureFlag&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;data&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;no&quot;&gt;ROLLOUT&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;Rollout&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;new&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;RolloutPostgresStore&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;new&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;FeatureFlag&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&#39;data&#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
 
-&lt;span class=&quot;n&quot;&gt;describe&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;RolloutPostgresStore&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;.new&amp;#39;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt;
-  &lt;span class=&quot;n&quot;&gt;it&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;assigns the model instance variable&amp;#39;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;store&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;RolloutPostgresStore&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;new&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;FeatureFlag&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;data&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;expect&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;store&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;instance_variable_get&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;:@model&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;to&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;be&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;FeatureFlag&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;describe&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;RolloutPostgresStore&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&#39;.new&#39;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;it&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&#39;assigns the model instance variable&#39;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;store&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;RolloutPostgresStore&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;new&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;FeatureFlag&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&#39;data&#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;expect&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;store&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;instance_variable_get&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;:@model&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)).&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;to&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;be&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;FeatureFlag&lt;/span&gt;
   &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
 
-  &lt;span class=&quot;n&quot;&gt;it&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;assigns the attribute instance variable&amp;#39;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;store&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;RolloutPostgresStore&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;new&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;FeatureFlag&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;data&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;expect&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;store&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;instance_variable_get&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;:@attribute&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;to&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;eql&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;data&amp;#39;&lt;/span&gt;
-  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
-&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
-
-&lt;span class=&quot;n&quot;&gt;describe&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;RolloutPostgresStore&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;#get&amp;#39;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt;
-  &lt;span class=&quot;n&quot;&gt;it&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;returns nil for not having found a FeatureFlag with the given key&amp;#39;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;store&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;RolloutPostgresStore&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;new&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;FeatureFlag&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;data&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;expect&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;store&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;get&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&amp;#39;test_key&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;to&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;be&lt;/span&gt; &lt;span class=&quot;kp&quot;&gt;nil&lt;/span&gt;
-  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
-
-  &lt;span class=&quot;n&quot;&gt;it&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;returns the value for a given key when a FeatureFlag is found&amp;#39;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt;
-    &lt;span class=&quot;no&quot;&gt;ROLLOUT&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;activate_percentage&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;:search&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;20&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-
-    &lt;span class=&quot;n&quot;&gt;store&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;RolloutPostgresStore&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;new&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;FeatureFlag&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;data&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;expect&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;store&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;get&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&amp;#39;feature:search&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;to&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;eql&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;20||&amp;#39;&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;it&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&#39;assigns the attribute instance variable&#39;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;store&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;RolloutPostgresStore&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;new&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;FeatureFlag&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&#39;data&#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;expect&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;store&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;instance_variable_get&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;:@attribute&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)).&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;to&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;eql&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&#39;data&#39;&lt;/span&gt;
   &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
 &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
 
-&lt;span class=&quot;n&quot;&gt;describe&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;RolloutPostgresStore&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;#set&amp;#39;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt;
-  &lt;span class=&quot;n&quot;&gt;it&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;receives the create_feature_flag message for not having found a flag&amp;#39;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;expect_any_instance_of&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;RolloutPostgresStore&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;to&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;receive&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;:create_feature_flag&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;at_most&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;:once&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-
-    &lt;span class=&quot;no&quot;&gt;RolloutPostgresStore&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;new&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;FeatureFlag&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;data&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;set&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&amp;#39;search&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;20||&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;describe&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;RolloutPostgresStore&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&#39;#get&#39;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;it&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&#39;returns nil for not having found a FeatureFlag with the given key&#39;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;store&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;RolloutPostgresStore&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;new&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;FeatureFlag&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&#39;data&#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;expect&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;store&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;get&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&#39;test_key&#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)).&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;to&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;be&lt;/span&gt; &lt;span class=&quot;kp&quot;&gt;nil&lt;/span&gt;
   &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
 
-  &lt;span class=&quot;n&quot;&gt;it&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;receives the update_flag message for having found a flag&amp;#39;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt;
-    &lt;span class=&quot;no&quot;&gt;ROLLOUT&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;activate_percentage&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;:search&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;20&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;it&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&#39;returns the value for a given key when a FeatureFlag is found&#39;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt;
+    &lt;span class=&quot;no&quot;&gt;ROLLOUT&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;activate_percentage&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;:search&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;20&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
 
-    &lt;span class=&quot;n&quot;&gt;expect_any_instance_of&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;RolloutPostgresStore&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;to&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;receive&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;:update_flag&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;at_most&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;:once&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-
-    &lt;span class=&quot;no&quot;&gt;RolloutPostgresStore&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;new&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;FeatureFlag&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;data&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;set&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&amp;#39;feature:search&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;20||123&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;store&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;RolloutPostgresStore&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;new&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;FeatureFlag&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&#39;data&#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;expect&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;store&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;get&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&#39;feature:search&#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)).&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;to&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;eql&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&#39;20||&#39;&lt;/span&gt;
   &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
 &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
 
-&lt;span class=&quot;n&quot;&gt;describe&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;RolloutPostgresStore&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;#del&amp;#39;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt;
-  &lt;span class=&quot;n&quot;&gt;it&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;returns the object deleted for finding the key to delete&amp;#39;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt;
-    &lt;span class=&quot;no&quot;&gt;ROLLOUT&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;activate_percentage&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;:search&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;30&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;describe&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;RolloutPostgresStore&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&#39;#set&#39;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;it&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&#39;receives the create_feature_flag message for not having found a flag&#39;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;expect_any_instance_of&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;RolloutPostgresStore&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;).&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;to&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;receive&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;:create_feature_flag&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;).&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;at_most&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;:once&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+
+    &lt;span class=&quot;no&quot;&gt;RolloutPostgresStore&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;new&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;FeatureFlag&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&#39;data&#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;).&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;set&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&#39;search&#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&#39;20||&#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+
+  &lt;span class=&quot;n&quot;&gt;it&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&#39;receives the update_flag message for having found a flag&#39;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt;
+    &lt;span class=&quot;no&quot;&gt;ROLLOUT&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;activate_percentage&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;:search&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;20&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+
+    &lt;span class=&quot;n&quot;&gt;expect_any_instance_of&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;RolloutPostgresStore&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;).&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;to&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;receive&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;:update_flag&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;).&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;at_most&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;:once&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+
+    &lt;span class=&quot;no&quot;&gt;RolloutPostgresStore&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;new&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;FeatureFlag&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&#39;data&#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;).&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;set&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&#39;feature:search&#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&#39;20||123&#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;describe&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;RolloutPostgresStore&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&#39;#del&#39;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;it&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&#39;returns the object deleted for finding the key to delete&#39;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt;
+    &lt;span class=&quot;no&quot;&gt;ROLLOUT&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;activate_percentage&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;:search&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;30&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
 
     &lt;span class=&quot;c1&quot;&gt;# There is only one feature flag per the activation above&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;feature_flag&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;FeatureFlag&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;first&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;store&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;RolloutPostgresStore&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;new&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;FeatureFlag&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;data&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;expect&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;store&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;del&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&amp;#39;feature:search&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;to&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;eq&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;feature_flag&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;feature_flag&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;FeatureFlag&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;first&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;store&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;RolloutPostgresStore&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;new&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;FeatureFlag&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&#39;data&#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;expect&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;store&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;del&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&#39;feature:search&#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)).&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;to&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;eq&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;feature_flag&lt;/span&gt;
   &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
 
-  &lt;span class=&quot;n&quot;&gt;it&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;returns nil for not being able to find the key to delete&amp;#39;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;expect&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;RolloutPostgresStore&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;new&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;FeatureFlag&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;data&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;del&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&amp;#39;feature:test&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;to&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;be&lt;/span&gt; &lt;span class=&quot;kp&quot;&gt;nil&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;it&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&#39;returns nil for not being able to find the key to delete&#39;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;expect&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;RolloutPostgresStore&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;new&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;FeatureFlag&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&#39;data&#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;).&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;del&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&#39;feature:test&#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)).&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;to&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;be&lt;/span&gt; &lt;span class=&quot;kp&quot;&gt;nil&lt;/span&gt;
   &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
-&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
 &lt;h2 id=&quot;conclusion&quot;&gt;Conclusion&lt;/h2&gt;
 
@@ -769,77 +1019,6 @@ software seems to fit exactly that. The code is available on
         <pubDate>Fri, 06 Feb 2015 18:15:00 -0500</pubDate>
         <link>http://yourdomain.com/ruby/rollout/2015/02/06/postgres-store-for-rollout-gem/</link>
         <guid isPermaLink="true">http://yourdomain.com/ruby/rollout/2015/02/06/postgres-store-for-rollout-gem/</guid>
-      </item>
-    
-      <item>
-        <title>CSS Best Practices</title>
-        <description>&lt;h2 id=&quot;a-css-spirit-quest&quot;&gt;A CSS spirit quest&lt;/h2&gt;
-
-&lt;p&gt;Our development team recently held an internal ‘mini-conference’, during which
-most of the developers got a chance to present on a topic of interest. The idea
-was to talk about something relevant to our professional development, but also
-something that we are really passionate about.&lt;/p&gt;
-
-&lt;p&gt;Probably as much to my surprise as everyone else’s, I’ve recently become very
-passionate about writing good quality CSS, and decided to give a talk on the
-subject. I’ve been writing a lot of CSS over the past few months, as part of
-some really cool front-end redesign projects our team has been working on. I
-found that the more I cared about following CSS best practices, and the
-stricter I tried to be with myself in following them, the easier (and more fun)
-the process became. I think all developers could benefit from treating CSS as a
-legitimate discipline worthy of serious study, and in doing so would probably
-find their disdain for it subsiding.&lt;/p&gt;
-
-&lt;p&gt;You can view my full presentation on why we should care about CSS best
-practices &lt;a href=&quot;http://slides.com/laurefischer/css-spirit-quest&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;
-</description>
-        <pubDate>Sun, 05 Oct 2014 14:15:00 -0400</pubDate>
-        <link>http://yourdomain.com/css/2014/10/05/css-debates/</link>
-        <guid isPermaLink="true">http://yourdomain.com/css/2014/10/05/css-debates/</guid>
-      </item>
-    
-      <item>
-        <title>Rails Asset Pipeline</title>
-        <description>&lt;h2 id=&quot;slight-asset-pipeline-overview&quot;&gt;Slight Asset Pipeline Overview&lt;/h2&gt;
-&lt;p&gt;The Rails Asset Pipeline can be slightly tricky to newcomers and those not in
-the rails world. It was brought into this world when version 3.1 launched and
-its main mission was to ease the developer pain on getting assets (images,
-scripts, stylesheets) production ready.&lt;/p&gt;
-
-&lt;p&gt;There are a lot of minor gotchas with the pipeline like:&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;Remembering to actually use the helper methods to get things properly fingerprinted&lt;/li&gt;
-  &lt;li&gt;Remembering to add custom named manifest files to config/application.rb&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;c1&quot;&gt;#config/application.rb&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;config&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;assets&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;precompile&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+=&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&amp;#39;new_manifest.js&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;new_manifest.css&amp;#39;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;Remembering to include newly created javascripts and stylesheets to our manifests.&lt;/li&gt;
-  &lt;li&gt;And I am sure there is much more that I am forgetting.&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h2 id=&quot;our-code-and-the-pipeline&quot;&gt;Our Code and The Pipeline&lt;/h2&gt;
-&lt;p&gt;Our codebase is a multi-tenant platform that services our top three sites:
-&lt;a href=&quot;http://www.cooksillustrated.com&quot;&gt;Cook’s Illustrated&lt;/a&gt;,
-&lt;a href=&quot;http://www.cookscountry.com&quot;&gt;Cook’s Country&lt;/a&gt;, and
-&lt;a href=&quot;http://www.americastestkitchen.com&quot;&gt;America’s Test Kitchen&lt;/a&gt;. We have approximately
-six-ish custom manifest files due to the multi-tenant nature of our platform. At
-times, we do tend to forget to use one of the many helpers that Rails comes with.&lt;/p&gt;
-
-&lt;h2 id=&quot;quick-presentation-for-knowledge-flow&quot;&gt;Quick Presentation For Knowledge Flow&lt;/h2&gt;
-&lt;p&gt;In lieu of this lack of remembering to use helpers, I decided to create a quick
-presentation (5-10minute talk in length) to go over the asset pipeline, less in
-depth than 
-&lt;a href=&quot;http://guides.rubyonrails.org/asset_pipeline.html&quot;&gt;Rails documentation&lt;/a&gt;. I used
-&lt;a href=&quot;https://github.com/jdan/cleaver&quot;&gt;cleaver&lt;/a&gt; to generate the presentation. Comments
-and questions are welcomed.&lt;/p&gt;
-</description>
-        <pubDate>Thu, 14 Aug 2014 19:15:00 -0400</pubDate>
-        <link>http://yourdomain.com/rails/asset_pipeline/2014/08/14/rails-asset-pipeline/</link>
-        <guid isPermaLink="true">http://yourdomain.com/rails/asset_pipeline/2014/08/14/rails-asset-pipeline/</guid>
       </item>
     
   </channel>
